@@ -1,0 +1,49 @@
+{
+  "sema_surumu": "1.1",
+  "uretim_zamani": "2026-08-11T15:30:00",
+  "kok": "/Users/keremozdemir/Desktop/agent",
+  "ozet": {
+    "hata": 1,
+    "uyari": 2,
+    "bilgi": 1,
+    "kontrol_edilen": 15
+  },
+  "bulgular": [
+    {
+      "kural": "R03",
+      "kural_adi": "ad-dosya-uyumu",
+      "onem": "hata",
+      "kimlik": "agent:kod-review",
+      "dosya": ".claude/agents/kod-review.md",
+      "mesaj": "frontmatter'daki name 'kod-rev' dosya adı 'kod-review' ile uyuşmuyor",
+      "ipucu": "name alanını 'kod-review' yap ya da dosyayı kod-rev.md olarak yeniden adlandır"
+    },
+    {
+      "kural": "R06",
+      "kural_adi": "aciklama-kalitesi",
+      "onem": "uyari",
+      "kimlik": "agent:otomasyon-mimari",
+      "dosya": ".claude/agents/otomasyon-mimari.md",
+      "mesaj": "aciklama 92 karakter, 40-119 aralığında — biraz kısa",
+      "ipucu": "açıklamaya ne zaman tetiklendiğini gösteren 1-2 örnek daha ekle"
+    },
+    {
+      "kural": "R08",
+      "kural_adi": "kirik-referans",
+      "onem": "uyari",
+      "kimlik": "skill:proje",
+      "dosya": ".claude/skills/proje/SKILL.md",
+      "mesaj": "referanslar içinde 'ozel-agent' adında bir kayıt bulunamadı",
+      "ipucu": "'ozel-agent' adlı bir agent/skill oluştur ya da referansı gövdeden kaldır"
+    },
+    {
+      "kural": "R09",
+      "kural_adi": "alan-saglik",
+      "onem": "bilgi",
+      "kimlik": "agent:veri-analisti",
+      "dosya": ".claude/agents/veri-analisti.md",
+      "mesaj": "bilinmeyen_alanlar dolu: ['owner']",
+      "ipucu": "beklenmeyen frontmatter alanını kaldır ya da kasıtlıysa göz ardı et"
+    }
+  ]
+}

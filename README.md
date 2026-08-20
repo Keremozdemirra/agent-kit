@@ -51,9 +51,9 @@ asked. The description was written for the wrong phrasing. Say what you asked
 and what you expected, and it gets fixed — that feedback is more valuable than
 working around it.
 
-**What is actually built** is the Done section of [BACKLOG.md](BACKLOG.md).
-Everything under Queue is planned and does not exist yet. The daily loop builds
-one item a day; the table above is the intended shape, not the current state.
+**What is actually built** is listed under Contents below and in the Done
+section of [BACKLOG.md](BACKLOG.md). Everything under Queue is planned and does
+not exist yet.
 
 ## Layout
 
@@ -72,22 +72,31 @@ examples/
 
 See [BACKLOG.md](BACKLOG.md). The first unchecked item is the one being built.
 
-## Planned contents
+## Contents
 
-Nothing here is built yet. This table is the intended shape, and the daily loop
-fills it in one item at a time.
+| Skill | What it does |
+| --- | --- |
+| [hafiza-guncelle](skills/hafiza-guncelle) | Write what a session established into persistent memory, and prune what is no longer true. |
+| [karpathy-guidelines](skills/karpathy-guidelines) | Behavioural guidelines that reduce the coding mistakes language models reliably make. |
+| [new-project-scaffold](skills/new-project-scaffold) | Create a new numbered project in the projects/NNN-name/ layout these repositories share. |
+| [proje](skills/proje) | Deliver a multi-step build end to end with a team of specialist agents, from one prompt. |
+| [zero-hallucination-coder](skills/zero-hallucination-coder) | A Discuss to Map to Decompose to Execute to Verify loop that grounds code in verified structure. |
 
-| # | Skill | What it does |
-| --- | --- | --- |
-| 001 | [anatomy-of-a-skill](skills/anatomy-of-a-skill) | What a skill file contains, what belongs in frontmatter versus body, and the difference between an instruction and a description. |
-| 002 | [description-that-triggers](skills/description-that-triggers) | How to write the `description` field so the skill fires on the real request. |
-| 003 | [skill-or-prompt](skills/skill-or-prompt) | The test for whether something deserves to be a skill at all. |
-| 004 | [agent-boundaries](skills/agent-boundaries) | When a job needs its own agent rather than a skill: different judgement, different standard of proof, or a genuinely separate context. |
-| 005 | [testing-a-skill](skills/testing-a-skill) | How to check a skill actually works: the trigger test, the cold-start test, and the adversarial test where the request is phrased the way a real person would phrase it at the end of a long day. |
-| 006 | [skill-review-checklist](skills/skill-review-checklist) | The review pass to run over any skill before it ships, and the specific things a reviewer misses when the skill reads well. |
-| 007 | [house-voice](skills/house-voice) | The written register these repositories hold to, with before-and-after examples. |
-| 008 | [versioning-and-deprecation](skills/versioning-and-deprecation) | What happens to a skill that is superseded. |
+| Agent | What it does |
+| --- | --- |
+| [dogrulayici](agents/dogrulayici.md) | Reviews finished work adversarially, before it is handed over. |
+| [entegrator](agents/entegrator.md) | Merges work packages that ran in parallel into one coherent whole. |
+| [mimar](agents/mimar.md) | Turns a request into an implementable plan with parallel work packages. |
+| [uygulayici](agents/uygulayici.md) | Delivers one defined work package end to end. |
 
+| Tool | What it does |
+| --- | --- |
+| [tools/inventory](tools/inventory) | Scans a `.claude/` directory, validates every agent and skill it finds — frontmatter, name collisions, weak descriptions, broken references — and writes a single-file HTML panel. Python 3 standard library, no dependencies, read-only: it reports and never edits. |
+
+These arrived already written and in daily use, rather than being built against the queue below — which is why most carry no item number. Some have Turkish bodies: they were written in the language they are used in, and translating them is a queue item rather than a blocker.
+
+Everything still under Queue in [BACKLOG.md](BACKLOG.md) does not exist
+yet. The daily loop builds one item a day.
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
