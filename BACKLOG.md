@@ -22,7 +22,11 @@ Rules of thumb applied to every item:
 
 ## Done
 
-Nothing yet.
+- [x] **hafiza-guncelle** · shipped 2026-08-20. Written before this repository existed and published here as-is; no queue item.
+- [x] **karpathy-guidelines** · shipped 2026-08-20. Written before this repository existed and published here as-is; no queue item.
+- [x] **new-project-scaffold** · shipped 2026-08-20. Written before this repository existed and published here as-is; no queue item.
+- [x] **proje** · shipped 2026-08-20. Written before this repository existed and published here as-is; no queue item.
+- [x] **zero-hallucination-coder** · shipped 2026-08-20. Written before this repository existed and published here as-is; no queue item.
 
 ## Queue
 
