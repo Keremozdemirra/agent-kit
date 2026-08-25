@@ -1,23 +1,24 @@
 ---
 name: kisa-aciklama
-description: Sahte kökte ad çakışmasını doğrulamak için hazırlanmış örnek agent tanımı; frontmatter içindeki name alanı bilerek kisa-aciklama.md dosyasındaki adla aynıdır ve R05 kuralını tetiklemesi beklenir.
+description: Sample agent definition built to exercise name collision in the fake root; the name field in the frontmatter deliberately matches the name in kisa-aciklama.md and is expected to trigger R05.
 tools: Read, Grep
 model: opus
 ---
 
-Bu dosyanın tek amacı R05 (ad-cakismasi) kuralının hata seviyesinde
-tetiklendiğini kanıtlamaktır.
+The sole purpose of this file is to prove that R05 (name-collision) fires at
+error level.
 
-## Neden bu bozukluk
+## Why this defect
 
-Sahte kökte zaten "kisa-aciklama" adında bir agent var. Bu dosya aynı adı
-ikinci kez kullanır; iki kayıt aynı isimle çağrılamayacağı için tarayıcı
-sonraki kaydı çakışma olarak işaretlemelidir.
+The fake root already contains an agent named "kisa-aciklama". This file uses
+that name a second time; since two records cannot be invoked under one name, the
+scanner must flag the later record as a collision.
 
-## Beklenen yan etki
+## Expected side effect
 
-Dosya adı "ad-cakismasi", name alanı "kisa-aciklama" olduğu için bu dosya
-ayrıca R03 (ad-dosya-uyumu) kuralını da tetikler. Bu kaçınılmazdır: aynı
-dizinde iki dosya aynı ada sahip olamayacağından, ad çakışması ancak name
-alanı dosya adından farklı yazılarak kurulabilir. R03 zaten sahte kökte
-başka bir dosyayla da kapsandığı için bu yan etki test çıktısını bozmaz.
+Because the filename is "ad-cakismasi" while the name field is "kisa-aciklama",
+this file also triggers R03 (name-file-match). That is unavoidable: two files in
+one directory cannot share a filename, so a name collision can only be
+constructed by writing the name field differently from the filename. R03 is
+already covered by another file in the fake root, so this side effect does not
+distort the test output.

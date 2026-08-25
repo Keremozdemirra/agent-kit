@@ -3,46 +3,52 @@ name: "hafiza-guncelle"
 description: "Oturumda öğrenilenleri kalıcı hafızaya işler — yeni tercihler, proje bilgileri, kısaltmalar, kararlar. \"Bunu hatırla\", \"hafızaya ekle\", \"bunu not al\", \"bir daha sormana gerek kalmasın\" dendiğinde veya uzun bir oturumun sonunda kullan. Also triggers on \"remember this\", \"add this to memory\", \"save this so I don't have to repeat it\", \"note that down for next time\". Tek seferlik görev detayı, geçici durum veya şifre ve API anahtarı gibi hassas veri için kullanma."
 ---
 
-# Hafıza Güncelleme
+# Updating memory
 
-Amaç: aynı bilgiyi ikinci kez anlatmak zorunda kalmamak.
+The point: never having to explain the same thing twice.
 
-## Ne girer, ne girmez
+## What goes in, what does not
 
-**Girer** — tekrar tekrar geçerli olacak şeyler:
-- Kalıcı tercihler ("raporları hep PDF ver", "asla emoji kullanma")
-- Proje adı, amacı, teknoloji yığını, durumu
-- Kişiler ve rolleri
-- Kısaltmalar, kod adları, iç jargon
-- Alınmış kararlar ve gerekçeleri
-- Tekrarlayan iş akışları
-- Düzeltilen hatalar ("bir daha X yapma, çünkü Y")
+**Goes in** — things that will be true again:
+- Durable preferences ("always deliver reports as PDF", "never use emoji")
+- A project's name, purpose, stack, and status
+- People and their roles
+- Abbreviations, code names, in-house jargon
+- Decisions taken, and why
+- Recurring workflows
+- Corrections ("do not do X again, because Y")
 
-**Girmez:** tek seferlik görev detayı, zaten dosyada yazan şeyler (linkle),
-geçici durum, **tahmin** (emin değilsen sor, uydurup yazma).
+**Does not go in:** one-off task detail, anything already written in a file (link
+to it instead), transient state, and **guesses** (if you are not sure, ask — do
+not invent and write it down).
 
-## Adımlar
+## Steps
 
-1. **Mevcut hafızayı oku** (`CLAUDE.md` varsa) — tekrar yazma.
-2. **Oturumu tara:** kullanıcının seni düzelttiği anlar (tercih sinyali),
-   "her zaman / bir daha / biz genelde / bizde şöyle" cümleleri, açıkladığı ama
-   kayıtlı olmayan isim/kısaltma/proje, verilen kararlar.
-3. **Öner, sonra yaz:**
+1. **Read the existing memory** (`CLAUDE.md`, if there is one) — do not write
+   something twice.
+2. **Scan the session for:** the moments the user corrected you (a preference
+   signal), sentences like "always / never again / we usually / here we do it
+   this way", any name, abbreviation or project they explained that is not
+   recorded, and the decisions taken.
+3. **Propose, then write:**
    ```
-   ## Eklemeyi öneriyorum
-   § Bölüm → "eklenecek satır"   [neden: oturumda şunu dedin]
-   ## Güncellemeyi öneriyorum
-   § Bölüm → eski: "..." → yeni: "..."
+   ## Proposed additions
+   § Section → "the line to add"   [why: you said this in the session]
+   ## Proposed updates
+   § Section → old: "..." → new: "..."
    ```
-   Onay al, sonra uygula.
-4. **Yerine koy.** Doğru bölüme yaz, mevcut yapıyı bozma.
-5. **Buda.** Dosya 200 satırı geçtiğinde: geçersiz satırları sil, tekrarları
-   birleştir, detay şişmişse ayrı dosyaya taşı ve linkle. Silmeden önce göster.
+   Get approval, then apply.
+4. **Put it in the right place.** Write into the correct section; do not disturb
+   the existing structure.
+5. **Prune.** Once the file passes 200 lines: delete lines that are no longer
+   true, merge duplicates, and move bloated detail into a separate file with a
+   link. Show what you are removing before removing it.
 
-## Kurallar
-- **Kısa yaz.** Hafıza her oturumda okunuyor; şişerse maliyetli ve etkisiz olur.
-- Kontrol edilebilir yaz: "raporlar PDF" ✅ / "kullanıcı düzeni sever" ❌
-- Hassas veri (şifre, API anahtarı, kimlik no, banka bilgisi) **asla** yazma.
-- Karar defterine eklerken tarih at.
+## Rules
+- **Keep it short.** Memory is read every session; if it bloats, it becomes
+  expensive and ineffective at the same time.
+- Write what can be checked: "reports as PDF" ✅ / "the user likes tidiness" ❌
+- **Never** write sensitive data (passwords, API keys, ID numbers, bank details).
+- Date every entry added to the decision log.
 
-Hafıza dosyası yoksa: nerede tutulacağını sor, sonra oluştur.
+If there is no memory file: ask where it should live, then create it.

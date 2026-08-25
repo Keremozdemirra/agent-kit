@@ -5,8 +5,10 @@
 # güvenilmez.
 set -u
 
-KOK="$(cd "$(dirname "$0")/../../../.." && pwd)"
-CIKTI="$KOK/projeler/2026-08-11-agent-envanter/cikti"
+# The live .claude root the scan runs against. Override when it lives elsewhere:
+#   ENVANTER_KOK=/path/to/root bash test/calistir.sh
+KOK="${ENVANTER_KOK:-$HOME/Desktop/agent}"
+CIKTI="$(cd "$(dirname "$0")/.." && pwd)"
 SAHTE_KOK="$CIKTI/test/sahte-kok"
 
 basarisiz() {
@@ -36,7 +38,7 @@ IMZA_ONCE="$(imza_al)" || basarisiz "imza alinamadi (calistirmadan once)"
 echo "== Adim 1: tara.py gecerli JSON uretiyor, sayilar.agent==10, sayilar.skill==5 =="
 # --yaz: teslim edilen rapor/ anlik goruntusu her kabul kosusunda gercek
 # kokten yeniden uretilsin, bayat/yabanci dosya kalmasin.
-TARA_CIKTISI="$(python3 "$CIKTI/tara.py" --yaz)" || basarisiz "tara.py calisirken hata verdi"
+TARA_CIKTISI="$(python3 "$CIKTI/tara.py" --kok "$KOK" --yaz)" || basarisiz "tara.py calisirken hata verdi"
 echo "$TARA_CIKTISI" | python3 -m json.tool > /dev/null || basarisiz "tara.py ciktisi gecerli JSON degil"
 echo "$TARA_CIKTISI" | python3 -c "
 import json, sys
@@ -46,7 +48,7 @@ print('  OK: sayilar =', d['sayilar'])
 " || basarisiz "tara.py sayilari beklenenden farkli (sahte kok gercek taramaya karismis olabilir)"
 
 echo "== Adim 2: dogrula.py gercek kokte exit 0 donuyor =="
-python3 "$CIKTI/dogrula.py" --yaz > /dev/null
+python3 "$CIKTI/dogrula.py" --kok "$KOK" --yaz > /dev/null
 KOD=$?
 [ "$KOD" -eq 0 ] || basarisiz "dogrula.py gercek kokte exit $KOD dondu, 0 beklendi"
 echo "  OK: exit 0"
@@ -87,7 +89,7 @@ done
 echo "  OK: tara/dogrula/panel gecersiz kokte exit 2 + stderr hatasi"
 
 echo "== Adim 4: panel.py cikti/rapor/panel.html uretiyor, 15 kaydin adi da geciyor =="
-PANEL_STDERR="$(python3 "$CIKTI/panel.py" 2>&1 >/dev/null)"
+PANEL_STDERR="$(python3 "$CIKTI/panel.py" --kok "$KOK" 2>&1 >/dev/null)"
 KOD=$?
 [ "$KOD" -eq 0 ] || basarisiz "panel.py exit $KOD dondu"
 # stderr sessiz olmali: buraya bir sey basiliyorsa panel bulgu dosyasini

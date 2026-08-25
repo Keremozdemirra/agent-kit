@@ -1,22 +1,22 @@
 ---
 name: kirik-ref
-description: Sahte kökte kırık referans tespitini doğrulamak için hazırlanmış örnek agent tanımı; gövdede var olmayan bir agent adına backtick içinde atıf yapılmıştır ve yalnızca R08 kuralını tetiklemesi beklenir.
+description: Sample agent definition built to exercise broken-reference detection in the fake root; the body cites a non-existent agent name inside backticks and is expected to trigger only R08.
 tools: Read, Grep
 model: opus
 ---
 
-Bu dosyanın tek amacı R08 (kirik-referans) kuralının uyarı seviyesinde
-tetiklendiğini kanıtlamaktır.
+The sole purpose of this file is to prove that R08 (broken-reference) fires at
+warning level.
 
-## Kasıtlı kırık referans
+## The deliberate broken reference
 
-Bu iş için önce olmayan bir agent çağrılmalıdır: `olmayan-agent`. Böyle bir
-agent sahte kökte de gerçek kökte de tanımlı değildir. Tarayıcı bu satırda
-agent kelimesi geçtiği için backtick içindeki tokeni aday referans olarak
-yakalamalı ve kayıtlar arasında böyle bir ad bulamadığı için uyarı
-seviyesinde bir bulgu üretmelidir.
+This job should first call an agent that does not exist: `olmayan-agent`. No such
+agent is defined in the fake root or in the real one. Because the word agent
+appears on this line, the scanner must capture the backticked token as a
+candidate reference, and finding no such name among the records, produce a
+finding at warning level.
 
-## Diğer alanlar sağlıklı
+## The other fields are healthy
 
-Açıklama uzunluğu, gövde uzunluğu ve başlık sayısı bilinçli olarak sağlıklı
-aralıkta tutulmuştur, böylece bu dosya yalnızca R08'i tetikler.
+Description length, body length and heading count are deliberately kept in the
+healthy range, so this file triggers R08 alone.

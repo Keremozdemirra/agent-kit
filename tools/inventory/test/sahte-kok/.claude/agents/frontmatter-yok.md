@@ -1,15 +1,14 @@
-Bu dosyada bilerek frontmatter bloğu yok, düz metinle başlıyor.
+This file deliberately has no frontmatter block; it opens with plain prose.
 
-Amaç, tarayıcının frontmatter_var alanını false olarak işaretlediğini ve
-dogrula.py'nin R01 (frontmatter-var) kuralını hata seviyesinde ürettiğini
-kanıtlamaktır. Sahte kökteki diğer dört dosyanın aksine bu dosyanın hiçbir
-frontmatter alanı yok, bu yüzden ad ve aciklama alanları da boş kalacak ve
-ayrıca R02 (zorunlu-alan) kuralını da tetikleyecektir — bu beklenen ve
-kabul edilebilir bir yan etkidir, çünkü frontmatter'ı hiç olmayan bir
-dosyanın adı ve açıklaması da olamaz.
+The purpose is to prove that the scanner marks the frontmatter_var field false
+and that dogrula.py produces R01 (frontmatter-present) at error level. Unlike the
+other four files in the fake root, this one has no frontmatter field at all, so
+its name and description fields stay empty and it also triggers R02
+(required-field) — an expected and acceptable side effect, since a file with no
+frontmatter cannot have a name or a description either.
 
-Bu paragraf sadece gövde uzunluğunu makul bir seviyeye taşımak için
-yazılmıştır, böylece R07 (govde-bosluk) kuralı bu dosya için gereksiz bir
-hata ya da uyarı üretmez ve test çıktısı R01 üzerine net şekilde
-okunabilir kalır. Sahte kökteki her dosya P3 test paketinde tek bir kuralı
-hedefler; bu dosyanın hedefi frontmatter'ın tamamen yokluğudur.
+This paragraph exists only to bring the body up to a reasonable length, so that
+R07 (body-empty) produces neither an unnecessary error nor a warning for this
+file and the test output stays cleanly readable on R01. Every file in the fake
+root targets exactly one rule in the P3 test pack; this one targets the complete
+absence of frontmatter.
