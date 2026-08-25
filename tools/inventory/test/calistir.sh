@@ -7,7 +7,7 @@ set -u
 
 # The live .claude root the scan runs against. Override when it lives elsewhere:
 #   ENVANTER_KOK=/path/to/root bash test/calistir.sh
-KOK="${ENVANTER_KOK:-$HOME/Desktop/agent}"
+KOK="${ENVANTER_KOK:-$HOME/Desktop/Projects/agent}"
 CIKTI="$(cd "$(dirname "$0")/.." && pwd)"
 SAHTE_KOK="$CIKTI/test/sahte-kok"
 
