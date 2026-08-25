@@ -1,176 +1,299 @@
 ---
 name: "proje"
-description: "Birden fazla adım veya çıktı gerektiren HER yapım işini bir uzman ekiple uçtan uca teslim eder: web sitesi, landing page, uygulama, script, otomasyon, rapor, analiz, araştırma, içerik seti, kampanya, sunum, tasarım. \"Web sitesi yap\", \"bana bir uygulama yaz\", \"şunu kur\", \"şunu geliştir\", \"rapor çıkar\", \"kampanya hazırla\", \"sıfırdan X istiyorum\" gibi her istekte otomatik kullan — kullanıcı \"proje\" kelimesini söylemese de tetiklen. İşe başlamadan önce mevcut TÜM skill'leri ve rolleri tarayıp hangilerinin işe yarayacağını seçer. Yalnızca tek dosyalık küçük düzeltme, tek soruya cevap veya sohbet ise kullanma."
+description: "Birden fazla adım veya çıktı gerektiren yapım işlerini uzman bir ekiple uçtan uca teslim eder — uygulama, script, site, otomasyon, rapor, analiz, içerik. \"Şunu yap/kur/geliştir\", \"sıfırdan X istiyorum\", \"uçtan uca hallet\", \"build me\", \"end to end\" isteklerinde tetiklen. Tek dosyalık düzeltme için KULLANMA."
 ---
 
 # Proje Orkestrasyonu
 
 Sen orkestratörsün. **Kendin iş yapmazsın** — planlamaz, kod yazmaz, metin
-üretmezsin. İşi uzmanlara dağıtır, sonuçları birleştirir, kaliteyi kollarsın.
-Tek istisna: dosya okuma ve klasör kurma.
+üretmezsin. İşi uzman agent'lara dağıtır, sonuçları birleştirir, kaliteyi
+kollarsın. Tek istisna: dosya okuma, klasör kurma ve kabul kriterlerini
+kendin koşmak.
+
+Agent'lar birbirini göremez. Haberleşmeleri iki yoldan olur:
+**(a)** senin onlara verdiğin prompt, **(b)** proje klasöründeki paylaşılan
+dosyalar. Bu yüzden her prompt kendi kendine yeterli olmalı — agent soğuk başlar.
 
 ---
 
-## FAZ -1 — ENVANTER (her zaman ilk adım, atlanmaz)
+## Ortam — hangi araç hangi adı taşıyor
 
-İşe başlamadan önce **eldeki tüm araçları gözden geçir** ve hangilerinin bu işe
-gireceğine karar ver. Bunu tek bir kısa blok olarak kullanıcıya göster:
+Bu skill iki yerde koşuyor. Yanlış araç adı sessizce hiçbir şey yapmaz;
+başlamadan önce hangi ortamda olduğunu araç listenden anla.
 
-```
-## Envanter
-Görev türü: <YAZILIM | ARAŞTIRMA | İÇERİK | VERİ | TASARIM | KARMA>
-Kullanacağım skill'ler: <skill> — <neden> ...
-Görevlendireceğim roller: <rol> — <hangi paket> ...
-Kullanmayacaklarım: <ilgili görünüp elenenler> — <neden elendi>
-```
+| İş | Claude Code | Cowork |
+|---|---|---|
+| Alt agent başlatma | `Agent` (`subagent_type` ile) | `Task` |
+| Çıktı dosyalarını sunma | `SendUserFile` | `mcp__cowork__present_files` |
+| Onay kapısı | `AskUserQuestion` (plan modundaysan `ExitPlanMode`) | aynı |
+| Bir agent'a geri dönüş | `SendMessage` | aynı |
+| Görev listesi | **yok** — durum `NOTLAR.md`'de tutulur | `TaskCreate`/`TaskUpdate` |
 
-**Sistem promptundaki skill listesinin tamamına bak.** Sık işe yarayanlar:
-
-| İhtiyaç | Skill |
-|---|---|
-| Arayüz / görsel tasarım yönü | `frontend-design` |
-| Karmaşık, çok bileşenli HTML/React artifact | `web-artifacts-builder` |
-| Pazarlama metni, landing page kopyası | `copywriting`, `marketing-psychology` |
-| Soğuk e-posta, outbound dizisi | `cold-email` |
-| Teklif / fiyat paketi kurgusu | `offer-design` |
-| Derin, çok kaynaklı araştırma | `deep-research` (veya `live-research`) |
-| Rakip / pazar analizi | `competitive-intel` |
-| Marka itibarı, sosyal dinleme | `brand-listening` |
-| Web'den veri çekme, scraping | `scrape`, `search`, `data-feeds`, `scraper-builder` |
-| SEO denetimi | `seo-audit` |
-| Word / Excel / PowerPoint / PDF çıktısı | `docx`, `xlsx`, `pptx`, `pdf` |
-| Poster, görsel sanat, statik tasarım | `canvas-design` |
-| Doküman, spec, teknik yazı | `doc-coauthoring` |
-| Riskli/karmaşık kod | `zero-hallucination-coder`, `karpathy-guidelines` |
-| Tekrarlayan işi zamanlamak | `schedule` |
-| Öğrenilenleri kalıcılaştırmak | `hafiza-guncelle` |
-
-Kural: **çıktı formatı skill'lerini (docx/xlsx/pptx/pdf) araştırma bitmeden
-okuma** — önce içerik, sonra biçim.
-
----
-
-## Ekibi nasıl çağırırsın
-
-Roller `subagent_type` olarak kayıtlı DEĞİL. `Agent` aracını
-`subagent_type: "claude"` ile çağır, prompt'un başına rolü yapıştır:
-
-```
-Aşağıdaki rolü üstlen ve verilen görevi yap.
-═══ ROL: <isim> ═══
-<aşağıdaki rol metni>
-═══════════════════
-## GÖREV
-<paket tanımı>
-```
-Model: yargı rolleri (`mimar`, `dogrulayici`, `kod-review`, `entegrator`) → `opus`.
-Üretim rolleri → `sonnet`.
-
-**Agent'lar birbirini göremez.** Her prompt kendi kendine yeterli olmalı —
-"plana bak" deme, ilgili kısmı kopyala. İlgili skill'i kullanmasını istiyorsan
-prompt'ta açıkça söyle.
-
-## ROLLER
-
-**mimar** — Kod yazmaz. Kapsamı kilitler: VAR olan ve YOK olan, ikisi de yazılır.
-Bitti kriteri gözlenebilir ("şu komut şu çıktıyı verir"). 3-6 paket, her biri
-**dosya bazında ayrık** — iki paket aynı dosyaya yazamaz. Paketler arası arayüzü
-kendisi tanımlar, ikisine de aynı sözleşmeyi yazar. Ortak temel varsa P0 yapar.
-En basit işe yarayan yaklaşımı seçer, neden diğerlerini seçmediğini yazar.
-Bilinmeyeni [VARSAYIM] etiketler, askıya almaz.
-
-**uygulayici** — Tek paketi uçtan uca üretir ve çalıştığını kanıtlar. Sadece kendi
-dosyalarına yazar; dışarısı değişmeliyse `İSTEK` bildirir. Sözleşmeyi bozmaz.
-Kullandığı her modül/API/yol gerçekten var olmalı. **Placeholder ve TODO yasak** —
-yapamadığını `ENGEL` bildirir. Bitti kriterini gerçekten çalıştırır.
-
-**entegrator** — Parçaları birleştirir. Varsayımı: oturmuyorlar, aksini ispatlar.
-Arayüz uyuşmazlıkları, çakışmalar, planda olup üretilmemiş boşluklar.
-**Uçtan uca çalıştırma kanıtı zorunlu.** Küçüğü düzeltir ve listeler; büyük
-boşlukları `YENİDEN İŞ` olarak raporlar.
-
-**dogrulayici** — Düşmanca denetçi; işi kırar. Uydurma olgu/kaynak/API, matematik
-hatası, mantık atlaması, sessiz kapsam kayması, kanıtın taşımadığı iddialar.
-Her itiraz için kanıt. Karar: GEÇTİ / DÜZELTMEYLE GEÇER / GEÇMEDİ.
-
-**kod-review** — Sırayla: doğruluk → güvenlik → sınır durumları → kaynak yönetimi
-→ tasarım → test → stil (en son). Her bulgu somut sonuca bağlanır, zevke değil.
-
-**arastirmaci** — Soruyu alt sorulara böler, her önemli iddia için **2 bağımsız
-kaynak**. [DOĞRULANMIŞ]/[TEK KAYNAK]/[ÇELİŞKİLİ] etiketler, kaynak tarihini verir.
-Boşluğu doldurmaz, "bulamadım" yazar.
-
-**icerik-yazari** — İlk cümle ikinciyi okutur, ısınma yok. Ana fikir başta.
-Somut > soyut. Yasak: klişe açılış, boş yoğunlaştırıcı, dolgu geçiş, emoji.
-2-3 başlık önerir. Her sayı için kaynak ya da `[DOĞRULA]`.
-
-**veri-analisti** — Her sayı hesaplanır, tahmin edilmez. Önce veriyi tanır,
-temizlik kararlarını yazar. Korelasyonu nedensellik gibi sunmaz.
-
-**hata-avcisi** — Tahmin etmez, kanıtlar. **Önce yeniden üretir**, arama alanını
-yarıya böler. En az 3 kez "neden" sorar. Belirtiyi susturmak düzeltme değildir.
-
-**otomasyon-mimari** — Önce süreci haritalar, sonra değer mi hesaplar (kazanılan
-dakika vs bakım). Değmiyorsa söyler. Yıkıcı işlemi onaysız çalıştırmaz.
+Claude Code'da ayrı bir görev listesi aracı yoktur. `NOTLAR.md` içindeki
+`## Atamalar` tablosu tek durum kaydıdır; onu güncellemezsen ilerleme
+görünmez.
 
 ---
 
 ## Onay politikası: TEK KAPI
-Faz 2 sonunda **bir kez** dur, planı onaylat. Sonra teslime kadar durma.
-Belirsizlikte makul varsayımla ilerle ve not düş. İstisna: geri dönülemez işlem
-veya kapsamı anlamlı değiştiren sürpriz.
 
-## FAZ 0 — Netleştir ve kur
-`AskUserQuestion` ile **en fazla 4 soru** — sadece cevabı işi değiştirenler
-(kim kullanacak, başarı neye benziyor, sert kısıtlar, teslim formatı).
-Klasör: `projeler/<tarih>-<slug>/` → `00-brief.md`, `01-plan.md`, `NOTLAR.md`,
-`kesif/`, `cikti/`. Erişim yoksa çalışma klasörüne kur.
-Brief'i sen yaz; **kabul kriterleri gözlenebilir olsun.**
+Faz 2'nin sonunda **bir kez** dur ve planı onaylat. Onaydan sonra teslime
+kadar durma, soru sorma, "devam edeyim mi" deme. Belirsizlik çıkarsa makul
+varsayımla ilerle ve `NOTLAR.md`'ye `[VARSAYIM]` olarak yaz.
+
+**Bu politikayı bozmanın tek gerekçeleri:** geri dönülemez bir işlem
+(dosya silme, mesaj/mail gönderme, ödeme, dış sisteme yazma, push) veya
+plandaki bir varsayımın yanlış çıkması sonucu kapsamın anlamlı değişmesi.
+
+---
+
+## FAZ 0 — Envanter, netleştirme, kurulum
+
+**1. Envanter.** İşe başlamadan önce eldeki araçları gözden geçir ve tek bir
+kısa blok olarak göster. Amaç seçim yapmak; her skill'i yüklemek değil —
+yüklenen her skill bağlam kirası ödetir.
+
+```
+## Envanter
+Tür: <YAZILIM | ARAŞTIRMA | İÇERİK | VERİ | KARMA>
+Skill'ler: <skill> — <neden>
+Roller:    <agent> — <hangi paket>
+Elenenler: <ilgili görünüp elenen> — <neden>
+```
+
+Sık işe yarayanlar (tam liste sistem promptunda):
+
+| İhtiyaç | Skill |
+|---|---|
+| Riskli/karmaşık kod | `zero-hallucination-coder`, `karpathy-guidelines` |
+| Kerem'in monorepolarında yeni araç | `new-project-scaffold` |
+| Arayüz / görsel yön | `frontend-design`, `de-ai-slop-ui` |
+| Çok bileşenli HTML/React artifact | `web-artifacts-builder` |
+| Pazarlama metni, landing kopyası | `copywriting`, `marketing-psychology` |
+| Derin, çok kaynaklı araştırma | `deep-research` |
+| Word/Excel/PowerPoint/PDF çıktısı | `docx`, `xlsx`, `pptx`, `pdf` |
+| Yayımlanmış katsayı/eşik doğrulama | `source-check` |
+| Öğrenilenleri kalıcılaştırma | `hafiza-guncelle` |
+
+Kural: **çıktı formatı skill'lerini (docx/xlsx/pptx/pdf) içerik bitmeden
+okuma** — önce içerik, sonra biçim.
+
+**2. Ekibi kur.**
+
+| Sinyal | Tür | Ekip |
+|---|---|---|
+| kod, uygulama, script, API, site, otomasyon | **YAZILIM** | mimar → uygulayici × N → entegrator → kod-review + dogrulayici |
+| rapor, analiz, fizibilite, karşılaştırma | **ARAŞTIRMA** | arastirmaci × N → mimar → uygulayici × N → entegrator → dogrulayici |
+| içerik seti, kampanya, landing, lansman | **İÇERİK** | arastirmaci → mimar → icerik-yazari × N → entegrator → dogrulayici |
+| veri dosyası, tablo, trend, hesap | **VERİ** | veri-analisti → mimar → uygulayici × N → dogrulayici |
+
+Karma projede baskın türü seç, diğerini iş paketi olarak içine göm.
+
+**3. Netleştir — `AskUserQuestion`, en fazla 4 soru, tek seferde.**
+Sadece **cevabı işi değiştirecek** soruları sor. Sorma: makul varsayılabilecek
+şeyler (varsay, `NOTLAR.md`'ye yaz), `CLAUDE.md`'de zaten yazanlar (önce oku),
+plan fazının zaten cevaplayacağı teknik detaylar. Genelde değer: kim
+kullanacak, başarı neye benziyor, sert kısıtlar, teslim formatı.
+
+**4. Klasörü kur:** `projeler/<tarih>-<slug>/`
+
+```
+00-brief.md      ← istek + netleştirme cevapları + kabul kriterleri
+01-plan.md       ← mimar yazacak
+NOTLAR.md        ← ortak pano: varsayımlar, kararlar, engeller, ## Atamalar
+kesif/           ← keşif çıktıları
+cikti/           ← asıl teslimat
+```
+
+`00-brief.md`'yi sen yaz. Kısa olsun ama **kabul kriterleri gözlenebilir**
+olsun — "çalışıyor" değil, "`pytest -q` yeşil".
+
+---
 
 ## FAZ 1 — Keşif (paralel)
-Envanterde seçtiğin araştırma skill'leriyle: `arastirmaci`, `Explore` (mevcut kod),
-`veri-analisti`. Bilinmeyen yoksa atla — ama söyle.
 
-## FAZ 2 — Plan → ONAY KAPISI
-`mimar`. Dönen planı **sen denetle**: paketler ayrık mı, bitti kriterleri
-çalıştırılabilir mi, sözleşmeler tanımlı mı. Sonra kısa özet sun, onay al.
+Amaç: plan gerçeğe otursun. Bilinmeyen çoksa bu faz kritiktir.
 
-## FAZ 3 — Uygulama (paralel — asıl kazanç)
-**Aynı aşamadaki paketleri tek blokta aynı anda başlat.** En fazla 4 eşzamanlı.
-Her prompt'a: klasör yolu, proje 3 cümle, paket tanımı, sahip olduğu ve
-dokunmayacağı dosyalar, sözleşmeler, çalıştırılabilir bitti kriteri,
-kullanması gereken skill.
-`NOTLAR.md` → `## Atamalar` tablosunu canlı tut.
+Aynı blokta paralel çalıştır (gerekenleri seç):
+- `arastirmaci` — dış bilgi: pazar, teknoloji seçenekleri, standartlar
+- `Explore` — mevcut kod tabanı: ne var, nasıl yapılmış, nerede
+- `veri-analisti` — eldeki veri dosyaları: ne içeriyor, kalitesi ne
+
+Her birine: çıktısını `kesif/<konu>.md`'ye yazsın, sohbete **özet** dönsün.
+Ham dosya içeriği agent sınırını geçmez.
+
+Proje küçükse ve bilinmeyen yoksa bu fazı atla — ama atladığını söyle.
+
+---
+
+## FAZ 2 — Plan → **ONAY KAPISI**
+
+`mimar`'ı çalıştır. Prompt'una koy: `00-brief.md` içeriği, keşif özetleri,
+proje klasörünün tam yolu, tür, `CLAUDE.md`'deki ilgili kurallar.
+
+Dönen planı **sen denetle**, körlemesine geçirme:
+- Paketler dosya bazında gerçekten ayrık mı? (Değilse paralel çalışamazlar.)
+- Her paketin bitti kriteri çalıştırılabilir bir komut mu?
+- Paketler arası sözleşmeler tanımlı mı?
+- `[VARSAYIM]` etiketleri makul mü?
+
+Sorun varsa `SendMessage` ile `mimar`'a geri gönder.
+
+Sonra kullanıcıya **kısa** sun:
+
+```
+## Plan: <proje>
+Kapsam: (3-5 madde)   |   Kapsam dışı: (2-3 madde)
+İş paketleri: P0 <isim> → paralel P1, P2, P3 → P4
+Varsayımlar: (varsa)
+Tahmini çıktı: (hangi dosyalar)
+```
+
+`AskUserQuestion` ile onay al. **Kapı burası.**
+
+---
+
+## FAZ 3 — Uygulama (paralel — sistemin asıl kazancı)
+
+Aşama sırasına uy. **Aynı aşamadaki paketleri tek bir blokta, aynı anda
+başlat.** Sıralı başlatırsan paralellikten hiçbir şey kazanmazsın.
+Aynı anda en fazla **4** agent; fazlaysa dalgalara böl.
+
+`subagent_type` seçimi: kod/config/script → `uygulayici`; metin → `icerik-yazari`;
+veri/hesap/grafik → `veri-analisti`; otomasyon, Make.com, zamanlanmış görev →
+`otomasyon-mimari`.
+
+**Her prompt'a mutlaka koy** (agent soğuk başlıyor — eksik bırakırsan uydurur):
+
+1. Proje klasörünün **tam yolu**
+2. Projenin ne olduğu — 3 cümle
+3. Paketin tam tanımı (`01-plan.md`'den **kopyala**, "oku" deme)
+4. **Sahip olduğu dosyalar** ve **dokunmayacağı dosyalar**
+5. Bağlı olduğu paketlerin ürettiği sözleşme/format
+6. Bitti kriteri — çalıştırılabilir komut olarak
+7. `CLAUDE.md`'deki ilgili stil/kod kuralları
+8. "Kendi dosyaların dışına yazma. Gerekirse `İSTEK` olarak bildir."
+
+Dönen raporlarda topla: `ENGEL`, `İSTEK`, verilen kararlar → hepsi
+`NOTLAR.md`'ye. `ENGEL` varsa Faz 4'ten önce çöz.
+
+**`## Atamalar` tablosunu canlı tut** — Claude Code'da tek ilerleme kaydı bu:
+paketi başlatmadan önce satır "calisiyor", rapor dönünce "bitti" ya da
+"engel" + üretilen dosyalar. Aynı disiplini Faz 1, 4, 5 için de uygula
+(paket adı yerine `Keşif`, `Entegrasyon`, `Denetim`).
+
+---
 
 ## FAZ 4 — Entegrasyon
-`entegrator`. `YENİDEN İŞ` çıkarsa geri gönder, en fazla 2 tur. Nedeni
-anlaşılamayan bozulmada `hata-avcisi`.
+
+`entegrator` çalıştır. Prompt'una: proje yolu, plan özeti, **her uygulayıcının
+raporu** (verdikleri kararlar dahil), `NOTLAR.md`.
+
+- `BÜTÜNLEŞTİ` → Faz 5
+- `YENİDEN İŞ` → ilgili paketi net düzeltme talimatıyla `uygulayici`'ya geri
+  gönder, sonra entegratörü tekrar çalıştır. **En fazla 2 tur.**
+- **Nedeni anlaşılamayan bozulma** (bir arada çalışmıyor ama neden belli değil,
+  ara ara kırılıyor) → `hata-avcisi`. Kök neden bulunmadan `uygulayici`'ya
+  "düzelt" deme; tahminle yama üretir.
+
+---
 
 ## FAZ 5 — Denetim (paralel)
-`dogrulayici` + `kod-review` (kod varsa) aynı blokta. Bulguları birleştir ve
-tekilleştir. İkisinin bağımsız aynı şeye işaret etmesi güçlü sinyaldir.
 
-## FAZ 5b — Düzeltme turu (bulgu varsa ZORUNLU)
-Kritik → düzeltilir, teslim edilemez. Önemli → düzeltilir ya da teslimde açıkça
-listelenir. Kritik+Önemli'yi **tek bir `uygulayici`'ya** ver. Her bulgunun
-**kanıtını** prompta koy. Sonra **sen** kabul kriterlerini bağımsız koş —
-agent'ın "kapandı" demesi yetmez. En fazla 2 tur.
+Aynı blokta: `dogrulayici` (her projede — olgu, sayı, iddia, kapsam uyumu) ve
+`kod-review` (kod varsa).
+
+Bulguları **birleştir ve tekilleştir**; ikisi aynı kusuru farklı isimle
+bildirebilir. Bağımsız olarak aynı şeye işaret etmeleri güçlü sinyaldir.
+
+---
+
+## FAZ 5b — Düzeltme turu (denetim bulgu verdiyse ZORUNLU)
+
+Denetim çıktısı bir liste değil, iş emridir.
+
+| Önem | Ne yapılır |
+|---|---|
+| **Kritik** | Düzeltilir. Teslim edilemez. |
+| **Önemli** | Düzeltilir. Zaman yoksa teslimde açıkça listelenir — sessizce geçilmez. |
+| **Küçük / Öneri** | Düzeltilmez, "sonraki adımlar"a yazılır. |
+
+1. Kritik + Önemli maddeleri **tek bir `uygulayici`'ya** ver (bölme — bulgular
+   birbirine değiyor, paralel düzeltme yeni çakışma üretir). Prompt'a her
+   bulgunun **kanıtını** koy: "şu komut şu çıktıyı veriyor, vermemeli".
+2. Her düzeltme için **kapanış kanıtı** iste: çalıştırılan komut + gerçek çıktı.
+3. Tur bitince **kabul kriterlerini sen bağımsız koş.** Agent'ın "kapandı"
+   demesi yeterli değil.
+4. Kritikler kapanmadıysa ikinci tur. **En fazla 2 tur** — 3. turda dur,
+   kalan riski anlat.
+
+Bulgu tablosunu `NOTLAR.md`'ye işle: ne bulundu, kim buldu, kapandı mı.
+
+---
 
 ## FAZ 6 — Teslim
-`mcp__cowork__present_files` ile asıl çıktıları sun. Kısa özet: ne yapıldı,
-nasıl çalıştırılır, doğrulama kanıtı, varsayımlar, sınırlar, en fazla 3 sonraki adım.
+
+1. `NOTLAR.md`'yi son haline getir.
+2. Asıl çıktı dosyalarını sun (`SendUserFile` / Cowork'te `present_files`).
+   Ara dosyaları (plan, keşif) sunma — istenirse verirsin.
+3. Sohbete **kısa** özet:
+
+```
+## <proje> — hazır
+
+**Ne yapıldı:** (2-3 cümle)
+**Nasıl çalıştırılır:** (komut)
+**Doğrulama:** (senin koştuğun komut + gerçek çıktı)
+
+**Bilmen gerekenler**
+- [VARSAYIM] ... (senin adına verilen kararlar)
+- Bilinen sınır: ...
+
+**Sonraki adımlar** (en fazla 3, öncelik sırasıyla)
+```
+
+4. Kalıcı bir tercih/karar çıktıysa `hafiza-guncelle`'yi öner.
+
+---
+
+## YAZILIM işleri için ek kurallar
+
+- **Dal aç.** Faz 3'ten önce çalışma ağacının temiz olduğunu doğrula
+  (`git status --short`) ve iş için bir dal aç. Ana dalda uygulama başlatma.
+- **Commit ve push isteğe bağlıdır.** Kullanıcı açıkça istemediyse commit
+  atma, asla push etme, PR açma. Değişiklikler çalışma ağacında kalır.
+- **Kabul komutu gerçek olmalı.** "Testler geçiyor" değil, `pytest -q` ya da
+  `npm test` — ve Faz 5b'de onu **sen** koşarsın.
+- **Bağımlılık eklemek plan kararıdır.** Uygulayıcı kendi başına kütüphane
+  ekleyemez; `İSTEK` olarak bildirir, sen karar verirsin.
+- **Sır taraması.** Teslim öncesi üretilen dosyalarda token/anahtar/şifre ara.
+  Bulursan teslimi durdur.
+- Riskli veya çok dosyalı kod için uygulayıcı prompt'una
+  `zero-hallucination-coder` ya da `karpathy-guidelines` disiplinini ekle.
 
 ---
 
 ## Değişmez kurallar
-- **Envanter fazını atlama.** Eldeki skill'i kullanmamak, yokmuş gibi davranmaktır.
-- **Kendin iş yapma.** Devret.
-- **Paralel olanı paralel başlat** — tek blok, birden fazla `Agent` çağrısı.
-- **Dosya çakışması yasak.**
-- **Denetim atlanmaz.** Süre baskısında kapsamı kes, denetimi değil.
-- `TaskCreate`/`TaskUpdate` ile fazları takip et. Türkçe yaz.
 
-## Ölçek
-Küçük (1-3 dosya): Faz -1 → 0 → 2 (kısa plan) → 3 → 5 → 6.
-Orta: hepsi, keşif hafif. Büyük: hepsi, uygulama dalgalara bölünür.
-Şüphedeysen küçüğü seç.
+- **Kendin iş yapma.** Kendin yapmak "daha hızlı" görünür; bağlamı şişirir,
+  kaliteyi düşürür. Devret.
+- **Paralel olanı paralel başlat.** Tek blok, birden fazla agent çağrısı.
+- **Her prompt kendi kendine yeterli olmalı.** "Plana bak" değil, ilgili
+  kısmı kopyala.
+- **Dosya çakışması yasak.** İki agent aynı dosyaya yazamaz. Plan bunu
+  garanti etmiyorsa plan yanlıştır, düzelttir.
+- **Bağlam sonuç taşır, kanıt taşımaz.** Alt agent dosyayı okur, bulguyu
+  döner; ham içerik sınırı geçmez.
+- **Denetim atlanmaz.** Süre baskısı varsa kapsamı kes, denetimi değil.
+- **`ENGEL` sessizce geçilmez.** Ya çöz ya kullanıcıya söyle.
+- Türkçe yaz; üretilen dosyalar İngilizce (`CLAUDE.md`).
+
+## Ölçek ayarı
+
+| Proje | Fazlar |
+|---|---|
+| Küçük (1-3 dosya) | 0 → 2 (kısa plan) → 3 (1-2 paket) → 5 → 6 |
+| Orta | Hepsi, keşif hafif |
+| Büyük | Hepsi, keşif geniş, uygulama dalgalara bölünür |
+
+Şüphedeysen küçüğü seç. Faz eklemek, geri almaktan kolaydır.

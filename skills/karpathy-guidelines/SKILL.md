@@ -1,6 +1,6 @@
 ---
 name: "karpathy-guidelines"
-description: "Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria."
+description: "Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria. Türkçe isteklerde de tetiklen — \"bu kodu sadeleştir\", \"gereksiz karmaşıklık var mı\", \"sadece istediğim yeri değiştir\", \"varsayımlarını yaz\", \"kodu gözden geçir\". Not for high-stakes, multi-file work that needs a full plan-and-verify loop; use zero-hallucination-coder for that."
 ---
 
 # Karpathy Guidelines
