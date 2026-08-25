@@ -1,23 +1,24 @@
 ---
 name: Ad_Format
-description: Sahte kökte ad biçim kuralını doğrulamak için hazırlanmış örnek agent tanımı; frontmatter içindeki name alanı bilerek büyük harf ve alt çizgi içerir, dosya adıyla birebir aynıdır ve yalnızca R04 kuralını tetiklemesi beklenir.
+description: Sample agent definition built to exercise the name-format rule in the fake root; the name field in the frontmatter deliberately contains an uppercase letter and an underscore, matches the filename exactly, and is expected to trigger only R04.
 tools: Read, Grep
 model: sonnet
 ---
 
-Bu dosyanın tek amacı R04 (ad-format) kuralının hata seviyesinde
-tetiklendiğini kanıtlamaktır.
+The sole purpose of this file is to prove that R04 (name-format) fires at error
+level.
 
-## Neden bu bozukluk
+## Why this defect
 
-Beklenen biçim yalnız küçük harf, rakam ve tiredir. Buradaki name alanı
-"Ad_Format" yazılmıştır: hem büyük harf hem alt çizgi içerir, bu yüzden
-biçim kuralını ihlal eder. Dosya adı da bilerek aynı yazılmıştır ki R03
-(ad-dosya-uyumu) devreye girmesin ve test çıktısında yalnız R04 görünsün.
+The expected format is lowercase letters, digits and hyphens only. The name field
+here is written "Ad_Format": it carries both an uppercase letter and an
+underscore, so it violates the format rule. The filename is written identically
+on purpose, so that R03 (name-file-match) does not also fire and only R04 shows
+in the test output.
 
-## Diğer alanlar sağlıklı
+## The other fields are healthy
 
-Açıklama uzunluğu, gövde uzunluğu ve başlık sayısı bilinçli olarak sağlıklı
-aralıkta tutulmuştur, böylece bu dosya yalnızca R04'ü tetikler ve test
-çıktısında başka gürültü yaratmaz. Model ve araç alanları da geçerli
-değerlerle doldurulmuştur, bilinmeyen hiçbir frontmatter alanı yoktur.
+Description length, body length and heading count are deliberately kept in the
+healthy range, so this file triggers R04 alone and adds no other noise to the
+test output. The model and tool fields carry valid values, and there is no
+unknown frontmatter field.

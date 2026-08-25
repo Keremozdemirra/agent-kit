@@ -1,21 +1,21 @@
 ---
 name: kisa-aciklama
-description: Kısa bir açıklama metni.
+description: A short description.
 tools: Read
 model: haiku
 ---
 
-Bu dosyanın tek amacı R06 (aciklama-kalitesi) kuralının hata seviyesinde
-tetiklendiğini kanıtlamaktır: frontmatter'daki description alanı 40
-karakterden kısadır.
+The sole purpose of this file is to prove that R06 (description-quality) fires at
+error level: the description field in the frontmatter is shorter than 40
+characters.
 
-## Gövde neden dolu
+## Why the body is full
 
-Gövde bilinçli olarak uzun ve başlıklı tutulmuştur ki R07 (govde-bosluk)
-kuralı bu dosya için ayrı bir bulgu üretmesin ve test çıktısı yalnızca R06
-üzerine net şekilde okunabilir kalsın.
+The body is deliberately long and carries headings so that R07 (body-empty) does
+not produce a separate finding for this file, and the test output stays cleanly
+readable on R06.
 
-## Amaç netliği
+## Clarity of purpose
 
-Sahte kökteki her dosya tek bir kuralı hedefler; bu dosyanın hedefi açıkça
-description alanının kısalığıdır, başka hiçbir alan bozulmamıştır.
+Every file in the fake root targets a single rule; this one targets the shortness
+of the description field, and no other field is broken.

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Envanter Paneli</title>
+<style>
+:root {
+  --bg: #0f1216;
+  --panel: #171b21;
+  --panel-2: #1e232b;
+  --border: #2a303a;
+  --text: #dfe4ea;
+  --text-dim: #9aa4b2;
+  --accent: #5aa9e6;
+  --hata: #e5484d;
+  --uyari: #e6a23c;
+  --bilgi: #6b7280;
+  --ok: #3fb950;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+header.ust-serit {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+header.ust-serit h1 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+header.ust-serit .meta {
+  color: var(--text-dim);
+  font-size: 13px;
+  word-break: break-all;
+}
+.kontroller {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+}
+#arama {
+  flex: 1 1 260px;
+  min-width: 200px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 8px 10px;
+  font-size: 14px;
+}
+button.filtre {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+button.filtre.aktif {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0b0f14;
+  font-weight: 600;
+}
+button.filtre:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+main {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 18px 20px 60px 20px;
+}
+.durum-basarili {
+  background: var(--panel);
+  border: 1px solid var(--ok);
+  color: var(--ok);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+.genel-bulgular {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+.genel-bulgular h2 {
+  font-size: 14px;
+  margin: 0 0 8px 0;
+}
+.kart {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.kart-basligi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.kart-basligi h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.rozet {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.rozet-agent { background: #23384f; color: #7ec4ff; }
+.rozet-skill { background: #2e3a24; color: #a7d675; }
+.rozet-model { background: var(--panel-2); color: var(--text-dim); border: 1px solid var(--border); }
+.rozet-hata { background: rgba(229,72,77,0.18); color: var(--hata); }
+.rozet-uyari { background: rgba(230,162,60,0.18); color: var(--uyari); }
+.rozet-bilgi { background: rgba(107,114,128,0.25); color: var(--text-dim); }
+.dosya-yolu {
+  font-size: 12px;
+  color: var(--text-dim);
+  word-break: break-all;
+  margin-bottom: 10px;
+}
+.aciklama {
+  font-size: 14px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin-bottom: 10px;
+}
+.govde-ozet {
+  font-size: 13px;
+  color: var(--text-dim);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin-bottom: 10px;
+}
+.araclar {
+  font-size: 12px;
+  color: var(--text-dim);
+  word-break: break-word;
+  margin-bottom: 10px;
+}
+.araclar span.arac {
+  display: inline-block;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  margin: 2px 4px 2px 0;
+}
+.bulgu-listesi {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  margin-top: 4px;
+}
+.bulgu-satiri {
+  font-size: 13px;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border);
+  word-break: break-word;
+}
+.bulgu-satiri:last-child { border-bottom: none; }
+.bulgu-ipucu {
+  color: var(--text-dim);
+  font-size: 12px;
+  margin-top: 2px;
+}
+section.referanslar {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 24px;
+}
+section.referanslar h2 {
+  font-size: 15px;
+  margin: 0 0 10px 0;
+}
+.referans-satiri {
+  font-size: 13px;
+  padding: 5px 0;
+  word-break: break-word;
+}
+.referans-satiri .kaynak { color: var(--text-dim); }
+a.ref-ok { color: var(--accent); text-decoration: none; }
+a.ref-ok:hover { text-decoration: underline; }
+.ref-kirik { color: var(--hata); }
+.ref-yerlesik { color: var(--text-dim); }
+.bos-durum {
+  color: var(--text-dim);
+  font-size: 14px;
+  padding: 20px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<header class="ust-serit">
+<h1>Agent Envanter Paneli</h1>
+<div class="meta">Kok: /Users/keremozdemir/Desktop/agent &middot; Uretim zamani: 2026-08-25T14:56:20</div>
+<div class="meta">10 agent &middot; 5 skill &middot; 0 bulgu (0 hata, 0 uyari, 0 bilgi) &middot; denetim: 2026-08-25T14:56:20</div>
+<div class="kontroller">
+<input type="text" id="arama" placeholder="Ara: ad, aciklama, arac, govde ozeti...">
+<button class="filtre aktif" data-filtre="hepsi">Hepsi</button>
+<button class="filtre" data-filtre="agent">Agent</button>
+<button class="filtre" data-filtre="skill">Skill</button>
+<button class="filtre" data-filtre="sorunlu" >Sorunlu</button>
+</div>
+</header>
+<main>
+<div class="durum-basarili">Sorun bulunmadi &mdash; 15 kayit, denetimde bulgu yok.</div>
+<div id="kart-listesi"></div>
+<section class="referanslar">
+<h2>Referanslar</h2>
+<div class="referans-satiri"><span class="kaynak">skill:proje</span> &rarr; <a class="ref-ok" href="#kart-agent-uygulayici">uygulayici</a></div>
+</section>
+</main>
+<script type="application/json" id="veri">
+{
+  "sema_surumu": "1.1",
+  "kok": "/Users/keremozdemir/Desktop/agent",
+  "kayitlar": [
+    {
+      "tur": "agent",
+      "kimlik": "agent:arastirmaci",
+      "dosya": ".claude/agents/arastirmaci.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/arastirmaci.md",
+      "beklenen_ad": "arastirmaci",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "arastirmaci",
+      "aciklama": "Derinlemesine, kaynaklı web araştırması yapar. Bir konuyu araştırmak, pazar/rakip taraması, \"X hakkında ne biliniyor\", literatür taraması, karar öncesi bilgi toplama gerektiğinde kullan. Türkçe tetikleyiciler - araştır, incele, tara, öğren, kaynak bul, rapor çıkar, market research, competitive landscape. Hızlı tek bir olgu kontrolü için KULLANMA (onu doğrudan ara).",
+      "model": "sonnet",
+      "araclar": [
+        "WebSearch",
+        "WebFetch",
+        "Read",
+        "Write",
+        "Glob",
+        "Grep",
+        "Bash"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 367,
+      "govde_uzunluk": 1814,
+      "govde_baslik_sayisi": 8,
+      "govde_ozet": "Sen bir araştırma analistisin. Görevin: dağınık ve güvenilmez web bilgisinden, üzerine karar verilebilecek sağlam bir brifing üretmek.",
+      "referanslar": [],
+      "degistirilme": "2026-08-11T14:46:18",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "agent",
+      "kimlik": "agent:dogrulayici",
+      "dosya": ".claude/agents/dogrulayici.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/dogrulayici.md",
+      "beklenen_ad": "dogrulayici",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "dogrulayici",
+      "aciklama": "Üretilmiş bir işi (rapor, analiz, kod, plan, e-posta) düşmanca gözle denetler ve hataları bulur. Bir işi teslim etmeden ÖNCE son kontrol olarak kullan. Türkçe tetikleyiciler - kontrol et, doğrula, gözden geçir, hata var mı, ikinci bir göz, sanity check, bu doğru mu. Yeni iş ÜRETMEZ, sadece denetler.",
+      "model": "opus",
+      "araclar": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 300,
+      "govde_uzunluk": 1862,
+      "govde_baslik_sayisi": 9,
+      "govde_ozet": "Sen bir denetçisin. İşin övmek değil, kırmak. Bir hata bulamadan dönersen muhtemelen yeterince bakmamışsındır.",
+      "referanslar": [],
+      "degistirilme": "2026-08-11T14:46:43",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "agent",
+      "kimlik": "agent:entegrator",
+      "dosya": ".claude/agents/entegrator.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/entegrator.md",
+      "beklenen_ad": "entegrator",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "entegrator",
+      "aciklama": "Paralel çalışmış iş paketlerini tek bir tutarlı bütüne birleştirir — arayüz uyuşmazlıklarını, çakışmaları ve boşlukları bulup kapatır. `proje` orkestrasyonunun entegrasyon fazında kullanılır. Ayrıca \"parçaları birleştir\", \"bunlar birbiriyle uyuşuyor mu\", \"uçtan uca çalışıyor mu\" dendiğinde kullanılabilir.",
+      "model": "opus",
+      "araclar": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Glob",
+        "Grep"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 306,
+      "govde_uzunluk": 2357,
+      "govde_baslik_sayisi": 9,
+      "govde_ozet": "Sen bir entegratörsün. Farklı agent'lar birbirini görmeden çalıştı; senin işin parçaların gerçekten birbirine oturduğunu kanıtlamak.",
+      "referanslar": [],
+      "degistirilme": "2026-08-11T14:57:22",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "agent",
+      "kimlik": "agent:hata-avcisi",
+      "dosya": ".claude/agents/hata-avcisi.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/hata-avcisi.md",
+      "beklenen_ad": "hata-avcisi",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "hata-avcisi",
+      "aciklama": "Bir bug'ın kök nedenini sistematik olarak bulur — tahminle değil, kanıtla. Bir şey çalışmıyor, hata veriyor, beklenmedik sonuç üretiyor veya ara ara bozuluyorsa kullan. Türkçe tetikleyiciler - çalışmıyor, hata veriyor, bug var, neden bozuldu, patlıyor, beklenmedik sonuç, bazen çalışıyor bazen çalışmıyor, stack trace.",
+      "model": "sonnet",
+      "araclar": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 318,
+      "govde_uzunluk": 2072,
+      "govde_baslik_sayisi": 9,
+      "govde_ozet": "Sen bir hata ayıklama uzmanısın. Kuralın tek: tahmin etme, kanıtla.",
+      "referanslar": [],
+      "degistirilme": "2026-08-11T14:47:36",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "agent",
+      "kimlik": "agent:icerik-yazari",
+      "dosya": ".claude/agents/icerik-yazari.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/icerik-yazari.md",
+      "beklenen_ad": "icerik-yazari",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "icerik-yazari",
+      "aciklama": "Yayınlanacak metin üretir — blog yazısı, LinkedIn/X postu, landing page kopyası, e-posta, ürün açıklaması, duyuru. \"Şunu yaz\", \"post hazırla\", \"metin lazım\", \"başlık bul\", \"bunu daha iyi anlat\" dendiğinde kullan. Kısa bir sohbet cevabı için KULLANMA.",
+      "model": "sonnet",
+      "araclar": [
+        "Read",
+        "Write",
+        "Edit",
+        "WebSearch",
+        "WebFetch",
+        "Glob",
+        "Grep"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 250,
+      "govde_uzunluk": 1804,
+      "govde_baslik_sayisi": 5,
+      "govde_ozet": "Sen bir yazarsın. Amacın okuyanı ikna etmek değil önce okutmak.",
+      "referanslar": [],
+      "degistirilme": "2026-08-11T14:48:33",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "agent",
+      "kimlik": "agent:kod-review",
+      "dosya": ".claude/agents/kod-review.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/kod-review.md",
+      "beklenen_ad": "kod-review",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "kod-review",
+      "aciklama": "Kod değişikliklerini kıdemli mühendis gözüyle inceler — bug, güvenlik açığı, tasarım sorunu, bakım borcu. Commit/PR öncesi veya \"şu koda bakar mısın\" dendiğinde kullan. Türkçe tetikleyiciler - kod review, PR incele, bu koda bak, diff kontrol, commit öncesi, refactor öncesi değerlendirme.",
+      "model": "opus",
+      "araclar": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 288,
+      "govde_uzunluk": 2018,
+      "govde_baslik_sayisi": 5,
+      "govde_ozet": "Sen kıdemli bir yazılım mühendisisin ve kod review yapıyorsun.",
+      "referanslar": [],
+      "degistirilme": "2026-08-11T14:47:09",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "agent",
+      "kimlik": "agent:mimar",
+      "dosya": ".claude/agents/mimar.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/mimar.md",
+      "beklenen_ad": "mimar",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "mimar",
+      "aciklama": "Bir proje isteğini uygulanabilir plana çevirir — kapsam, mimari kararlar ve paralel çalışılabilir iş paketleri. `proje` orkestrasyonunun planlama fazında kullanılır. Ayrıca \"bunu nasıl kurgularız\", \"plan çıkar\", \"iş paketlerine böl\", \"mimari karar\" dendiğinde tek başına da kullanılabilir. Kod YAZMAZ, plan üretir.",
+      "model": "opus",
+      "araclar": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash",
+        "WebSearch",
+        "WebFetch",
+        "Write"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 314,
+      "govde_uzunluk": 2991,
+      "govde_baslik_sayisi": 4,
+      "govde_ozet": "Sen bir teknik mimar / proje planlayıcısısın. Kod yazmazsın; başkalarının soru sormadan uygulayabileceği bir plan üretirsin.",
+      "referanslar": [],
+      "degistirilme": "2026-08-11T14:56:24",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "agent",
+      "kimlik": "agent:otomasyon-mimari",
+      "dosya": ".claude/agents/otomasyon-mimari.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/otomasyon-mimari.md",
+      "beklenen_ad": "otomasyon-mimari",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "otomasyon-mimari",
+      "aciklama": "Tekrarlayan bir işi otomasyona çevirir — Make.com senaryosu, script, zamanlanmış görev veya connector zinciri tasarlar ve kurar. \"Bunu otomatikleştir\", \"her sabah şunu yapsın\", \"elle yapmaktan sıkıldım\", \"şu iki aracı bağla\", \"Make senaryosu kur\" dendiğinde kullan.",
+      "model": "sonnet",
+      "araclar": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Glob",
+        "Grep",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 265,
+      "govde_uzunluk": 2264,
+      "govde_baslik_sayisi": 7,
+      "govde_ozet": "You are an automation architect. Your first instinct is not to pick a tool — it is to understand the work.",
+      "referanslar": [],
+      "degistirilme": "2026-08-25T14:52:49",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "agent",
+      "kimlik": "agent:uygulayici",
+      "dosya": ".claude/agents/uygulayici.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/uygulayici.md",
+      "beklenen_ad": "uygulayici",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "uygulayici",
+      "aciklama": "Tanımlı tek bir iş paketini uçtan uca üretir ve teslim eder — kod, doküman, konfigürasyon veya içerik. `proje` orkestrasyonunun uygulama fazında paralel olarak birden fazla kopyası çalıştırılır. Tek başına da kullanılabilir - \"şu paketi yap\", \"şunu uygula\".",
+      "model": "sonnet",
+      "araclar": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Glob",
+        "Grep",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 257,
+      "govde_uzunluk": 2575,
+      "govde_baslik_sayisi": 5,
+      "govde_ozet": "Sen bir uygulayıcısın. Sana tek bir iş paketi verildi. Onu bitirir, çalıştığını kanıtlar ve rapor edersin.",
+      "referanslar": [],
+      "degistirilme": "2026-08-11T14:56:53",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "agent",
+      "kimlik": "agent:veri-analisti",
+      "dosya": ".claude/agents/veri-analisti.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/agents/veri-analisti.md",
+      "beklenen_ad": "veri-analisti",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "veri-analisti",
+      "aciklama": "CSV/Excel/JSON veriyi temizler, analiz eder ve bulguları görselleştirir. Bir veri dosyasından sonuç çıkarmak, tablo temizlemek, trend bulmak, hesaplama doğrulamak gerektiğinde kullan. Türkçe tetikleyiciler - şu veriyi analiz et, excel'e bak, csv işle, tablo çıkar, trend var mı, hesapla, rakamlara bak, pivot, grafik çıkar.",
+      "model": "sonnet",
+      "araclar": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Glob",
+        "Grep"
+      ],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 323,
+      "govde_uzunluk": 1724,
+      "govde_baslik_sayisi": 8,
+      "govde_ozet": "Sen bir veri analistisin. Kural: her sayı hesaplanmış olmalı, tahmin edilmiş değil. Kafadan aritmetik yapma — her zaman kod çalıştır.",
+      "referanslar": [],
+      "degistirilme": "2026-08-11T14:48:06",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "skill",
+      "kimlik": "skill:gunluk-brifing",
+      "dosya": ".claude/skills/gunluk-brifing/SKILL.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/skills/gunluk-brifing/SKILL.md",
+      "beklenen_ad": "gunluk-brifing",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "gunluk-brifing",
+      "aciklama": "Günün tek sayfalık brifingini hazırlar — bekleyen e-postalar, taahhütler, bugün yapılması gerekenler ve dikkat isteyen tek şey. \"Günlük brifing\", \"günü özetle\", \"bugün ne var\", \"beni bilgilendir\", \"neyi kaçırıyorum\" dendiğinde kullan.",
+      "model": null,
+      "araclar": [],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 234,
+      "govde_uzunluk": 2303,
+      "govde_baslik_sayisi": 10,
+      "govde_ozet": "Produce one page Kerem can read in two minutes in the morning and plan the day from. If it runs long it stops being useful — cut hard.",
+      "referanslar": [],
+      "degistirilme": "2026-08-25T14:51:23",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "skill",
+      "kimlik": "skill:hafiza-guncelle",
+      "dosya": ".claude/skills/hafiza-guncelle/SKILL.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/skills/hafiza-guncelle/SKILL.md",
+      "beklenen_ad": "hafiza-guncelle",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "hafiza-guncelle",
+      "aciklama": "Oturumda öğrenilenleri kalıcı hafızaya işler — yeni tercihler, proje bilgileri, kısaltmalar, kararlar. \\\"Bunu hatırla\\\", \\\"hafızaya ekle\\\", \\\"bunu not al\\\", \\\"bir daha sormana gerek kalmasın\\\" dendiğinde veya uzun bir oturumun sonunda kullan. Also triggers on \\\"remember this\\\", \\\"add this to memory\\\", \\\"save this so I don't have to repeat it\\\", \\\"note that down for next time\\\". Tek seferlik görev detayı, geçici durum veya şifre ve API anahtarı gibi hassas veri için kullanma.",
+      "model": null,
+      "araclar": [],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 479,
+      "govde_uzunluk": 1973,
+      "govde_baslik_sayisi": 3,
+      "govde_ozet": "The point: never having to explain the same thing twice.",
+      "referanslar": [],
+      "degistirilme": "2026-08-25T14:51:04",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "skill",
+      "kimlik": "skill:inbox-triyaj",
+      "dosya": ".claude/skills/inbox-triyaj/SKILL.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/skills/inbox-triyaj/SKILL.md",
+      "beklenen_ad": "inbox-triyaj",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "inbox-triyaj",
+      "aciklama": "Gelen kutusunu tarar, mailleri aksiyona göre sınıflandırır ve cevaplanması gerekenlere taslak yazar. \"Inbox'ı temizle\", \"mailleri triyaj et\", \"hangi maile cevap vermeliyim\", \"gelen kutusuna bak\", \"şu maile cevap yaz\" dendiğinde kullan.",
+      "model": null,
+      "araclar": [],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 235,
+      "govde_uzunluk": 2305,
+      "govde_baslik_sayisi": 7,
+      "govde_ozet": "\u003e Never send mail without the user's approval. Only create drafts.",
+      "referanslar": [],
+      "degistirilme": "2026-08-25T14:51:47",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "skill",
+      "kimlik": "skill:karar-notu",
+      "dosya": ".claude/skills/karar-notu/SKILL.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/skills/karar-notu/SKILL.md",
+      "beklenen_ad": "karar-notu",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "karar-notu",
+      "aciklama": "Bir karar için yapılandırılmış karar notu üretir — seçenekler, ödünleşimler, kriterler, tavsiye ve geri dönüş planı. \\\"Karar vermem lazım\\\", \\\"A mı B mi\\\", \\\"hangisini seçmeliyim\\\", \\\"artı eksi çıkar\\\", \\\"karar notu yaz\\\" dendiğinde kullan. Also triggers on \\\"I need to decide\\\", \\\"A or B\\\", \\\"which one should I pick\\\", \\\"help me weigh these options\\\", \\\"write me a decision memo\\\". Kararın dayandığı dış veriyi sıfırdan toplamak için kullanma; onun için deep-research kullan.",
+      "model": null,
+      "araclar": [],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 477,
+      "govde_uzunluk": 2382,
+      "govde_baslik_sayisi": 15,
+      "govde_ozet": "The aim is not to make the decision. It is to make the right decision visible on its own.",
+      "referanslar": [],
+      "degistirilme": "2026-08-25T14:51:04",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    },
+    {
+      "tur": "skill",
+      "kimlik": "skill:proje",
+      "dosya": ".claude/skills/proje/SKILL.md",
+      "dosya_mutlak": "/Users/keremozdemir/Desktop/agent/.claude/skills/proje/SKILL.md",
+      "beklenen_ad": "proje",
+      "frontmatter_var": true,
+      "frontmatter_hata": null,
+      "ad": "proje",
+      "aciklama": "Birden fazla adım veya çıktı gerektiren yapım işlerini uzman bir ekiple uçtan uca teslim eder — uygulama, script, site, otomasyon, rapor, analiz, içerik. \\\"Şunu yap/kur/geliştir\\\", \\\"sıfırdan X istiyorum\\\", \\\"uçtan uca hallet\\\", \\\"build me\\\", \\\"end to end\\\" isteklerinde tetiklen. Tek dosyalık düzeltme için KULLANMA.",
+      "model": null,
+      "araclar": [],
+      "bilinmeyen_alanlar": [],
+      "aciklama_uzunluk": 317,
+      "govde_uzunluk": 12722,
+      "govde_baslik_sayisi": 16,
+      "govde_ozet": "You are the orchestrator. You do not do the work yourself — you do not plan, write code, or produce prose. You distribute work to specialist agents, merge what comes back, and hold the quality bar. Th",
+      "referanslar": [
+        "uygulayici"
+      ],
+      "degistirilme": "2026-08-25T14:51:04",
+      "_bulgular": [],
+      "_bulgu_sayac": {
+        "hata": 0,
+        "uyari": 0,
+        "bilgi": 0
+      }
+    }
+  ]
+}
+</script>
+<script>
+(function () {
+  var veri = JSON.parse(document.getElementById('veri').textContent);
+  var kayitlar = veri.kayitlar;
+  var container = document.getElementById('kart-listesi');
+  var mevcutTurFiltre = 'hepsi';
+  var mevcutArama = '';
+
+  function esc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function aramaMetni(k) {
+    var parcalar = [k.ad || '', k.beklenen_ad || '', k.aciklama || '',
+      (k.araclar || []).join(' '), k.govde_ozet || ''];
+    return parcalar.join(' ').toLowerCase();
+  }
+
+  function sorunluMu(k) {
+    var s = k._bulgu_sayac;
+    return s.hata + s.uyari + s.bilgi > 0;
+  }
+
+  function rozetSinifi(onem) {
+    if (onem === 'hata') return 'rozet-hata';
+    if (onem === 'uyari') return 'rozet-uyari';
+    return 'rozet-bilgi';
+  }
+
+  function kartHtml(k) {
+    // Python _kart_id() ile AYNI kural — kimlik dosya adından geliyor ve
+    // tırnak/boşluk içerebilir; ham hali id attribute'una girerse
+    // innerHTML uzerinden event handler enjekte edilebilir.
+    var id = 'kart-' + String(k.kimlik).replace(/[^a-zA-Z0-9_-]/g, '-');
+    var turRozet = k.tur === 'agent' ? 'rozet-agent' : 'rozet-skill';
+    var baslik = esc(k.ad || k.beklenen_ad);
+    var parcalar = [];
+    parcalar.push('<article class="kart" id="' + id + '" data-tur="' + esc(k.tur) +
+      '" data-sorunlu="' + (sorunluMu(k) ? '1' : '0') + '">');
+    parcalar.push('<div class="kart-basligi">');
+    parcalar.push('<h3>' + baslik + '</h3>');
+    parcalar.push('<span class="rozet ' + turRozet + '">' + esc(k.tur) + '</span>');
+    if (k.tur === 'agent' && k.model) {
+      parcalar.push('<span class="rozet rozet-model">' + esc(k.model) + '</span>');
+    }
+    var s = k._bulgu_sayac;
+    if (s.hata > 0) parcalar.push('<span class="rozet rozet-hata">' + s.hata + ' hata</span>');
+    if (s.uyari > 0) parcalar.push('<span class="rozet rozet-uyari">' + s.uyari + ' uyari</span>');
+    if (s.bilgi > 0) parcalar.push('<span class="rozet rozet-bilgi">' + s.bilgi + ' bilgi</span>');
+    parcalar.push('</div>');
+    parcalar.push('<div class="dosya-yolu">' + esc(k.dosya) + '</div>');
+    parcalar.push('<div class="aciklama">' + esc(k.aciklama || '(aciklama yok)') + '</div>');
+    if (k.tur === 'agent') {
+      var araclarHtml = (k.araclar || []).map(function (a) {
+        return '<span class="arac">' + esc(a) + '</span>';
+      }).join('');
+      parcalar.push('<div class="araclar">' + (araclarHtml || '(arac yok)') + '</div>');
+    }
+    if (k.govde_ozet) {
+      parcalar.push('<div class="govde-ozet">' + esc(k.govde_ozet) + '</div>');
+    }
+    if (k._bulgular.length > 0) {
+      parcalar.push('<div class="bulgu-listesi">');
+      k._bulgular.forEach(function (b) {
+        parcalar.push('<div class="bulgu-satiri">');
+        parcalar.push('<span class="rozet ' + rozetSinifi(b.onem) + '">' + esc(b.kural) +
+          ' ' + esc(b.onem) + '</span> ' + esc(b.mesaj));
+        if (b.ipucu) {
+          parcalar.push('<div class="bulgu-ipucu">-&gt; ' + esc(b.ipucu) + '</div>');
+        }
+        parcalar.push('</div>');
+      });
+      parcalar.push('</div>');
+    }
+    parcalar.push('</article>');
+    return parcalar.join('');
+  }
+
+  function ciz() {
+    var gorunecekler = kayitlar.filter(function (k) {
+      if (mevcutTurFiltre === 'agent' && k.tur !== 'agent') return false;
+      if (mevcutTurFiltre === 'skill' && k.tur !== 'skill') return false;
+      if (mevcutTurFiltre === 'sorunlu' && !sorunluMu(k)) return false;
+      if (mevcutArama && aramaMetni(k).indexOf(mevcutArama) === -1) return false;
+      return true;
+    });
+    if (gorunecekler.length === 0) {
+      container.innerHTML = '<div class="bos-durum">Eslesen kayit yok.</div>';
+      return;
+    }
+    container.innerHTML = gorunecekler.map(kartHtml).join('');
+  }
+
+  document.getElementById('arama').addEventListener('input', function (e) {
+    mevcutArama = e.target.value.trim().toLowerCase();
+    ciz();
+  });
+
+  var dugmeler = document.querySelectorAll('button.filtre');
+  dugmeler.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (btn.disabled) return;
+      mevcutTurFiltre = btn.getAttribute('data-filtre');
+      dugmeler.forEach(function (b) { b.classList.remove('aktif'); });
+      btn.classList.add('aktif');
+      ciz();
+    });
+  });
+
+  ciz();
+})();
+</script>
+</body>
+</html>

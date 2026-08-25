@@ -1,22 +1,22 @@
 ---
 name: baska-isim
-description: Sahte kökte ad-dosya uyumsuzluğunu doğrulamak için hazırlanmış örnek agent tanımı; frontmatter içindeki name alanı bilerek dosya adından farklı yazılmıştır ve yalnızca R03 kuralını tetiklemesi beklenir.
+description: Sample agent definition built to exercise the name-file mismatch in the fake root; the name field in the frontmatter is deliberately different from the filename and is expected to trigger only R03.
 tools: Read, Grep
 model: sonnet
 ---
 
-Bu dosyanın tek amacı R03 (ad-dosya-uyumu) kuralının hata seviyesinde
-tetiklendiğini kanıtlamaktır.
+The sole purpose of this file is to prove that R03 (name-file-match) fires at
+error level.
 
-## Neden bu bozukluk
+## Why this defect
 
-Frontmatter'daki name alanı "baska-isim" olarak yazılmıştır, oysa dosya adı
-"ad-uyumsuz" dur. Tarayıcı bu iki değeri karşılaştırıp uyuşmazlığı bir hata
-bulgusu olarak raporlamalıdır.
+The name field in the frontmatter is written "baska-isim", while the filename is
+"ad-uyumsuz". The scanner must compare the two values and report the mismatch as
+an error finding.
 
-## Diğer alanlar sağlıklı
+## The other fields are healthy
 
-Açıklama uzunluğu, gövde uzunluğu ve başlık sayısı bilinçli olarak sağlıklı
-aralıkta tutulmuştur, böylece bu dosya yalnızca R03'ü tetikler ve test
-çıktısında başka gürültü yaratmaz. Model ve araç alanları da geçerli
-değerlerle doldurulmuştur, bilinmeyen hiçbir alan yoktur.
+Description length, body length and heading count are deliberately kept in the
+healthy range, so this file triggers R03 alone and adds no other noise to the
+test output. The model and tool fields carry valid values, and there is no
+unknown field.
