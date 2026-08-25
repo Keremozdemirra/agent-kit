@@ -1,6 +1,6 @@
 ---
 name: "hafiza-guncelle"
-description: "Oturumda öğrenilenleri kalıcı hafızaya işler — yeni tercihler, proje bilgileri, kısaltmalar, kararlar. \"Bunu hatırla\", \"hafızaya ekle\", \"bunu not al\", \"bir daha sormana gerek kalmasın\" dendiğinde veya uzun bir oturumun sonunda kullan."
+description: "Oturumda öğrenilenleri kalıcı hafızaya işler — yeni tercihler, proje bilgileri, kısaltmalar, kararlar. \"Bunu hatırla\", \"hafızaya ekle\", \"bunu not al\", \"bir daha sormana gerek kalmasın\" dendiğinde veya uzun bir oturumun sonunda kullan. Also triggers on \"remember this\", \"add this to memory\", \"save this so I don't have to repeat it\", \"note that down for next time\". Tek seferlik görev detayı, geçici durum veya şifre ve API anahtarı gibi hassas veri için kullanma."
 ---
 
 # Hafıza Güncelleme

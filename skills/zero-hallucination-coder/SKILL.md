@@ -1,6 +1,6 @@
 ---
 name: "zero-hallucination-coder"
-description: "Runs a disciplined Discuss → Map → Decompose → Execute → Verify loop that grounds code in verified structure — no invented APIs, no assumed imports, no placeholder code — with a YAGNI ladder that deletes unnecessary code before it is written. Use when a coding task is high-stakes, complex, or spans existing code (auth, databases, migrations, multi-file features), or when the user explicitly asks to plan carefully before coding or avoid hallucinated code. Not for trivial edits or throwaway scripts."
+description: "Runs a disciplined Discuss → Map → Decompose → Execute → Verify loop that grounds code in verified structure — no invented APIs, no assumed imports, no placeholder code — with a YAGNI ladder that deletes unnecessary code before it is written. Use when a coding task is high-stakes, complex, or spans existing code (auth, databases, migrations, multi-file features), or when the user explicitly asks to plan carefully before coding or avoid hallucinated code. Türkçe isteklerde de tetiklen: \"önce dikkatli planla sonra kodla\", \"uydurma API kullanma\", \"bu iş kritik, adım adım ilerle\", \"önce mevcut kodu haritala\". Not for trivial edits or throwaway scripts."
 ---
 
 # Zero-Hallucination Coder

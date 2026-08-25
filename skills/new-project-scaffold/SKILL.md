@@ -1,6 +1,6 @@
 ---
 name: new-project-scaffold
-description: Creates a new numbered project inside the projects/NNN-name/ monorepo layout used by esg-toolkit, cbam-calc, analyst-toolkit, open-climate-data and unitguard — package directory, unittest suite, executable example, pyproject with requires-python >=3.9 and zero dependencies, and a README whose "what this is not" section is mandatory. Also updates BACKLOG.md and the root README project table, which are the two places a new project is referenced from and the two places people forget. Use this skill whenever the user wants to start a new project or tool in one of these repos, picks up the next unchecked item from BACKLOG.md, or says "yeni proje", "yeni araç ekle", "004'ü yapalım", "add a new tool", "scaffold a project", "start the next backlog item". Also use it when reviewing whether an existing project follows the layout, since it encodes the conventions those repos already hold themselves to.
+description: Creates a new numbered project inside the projects/NNN-name/ monorepo layout used by esg-toolkit, cbam-calc, analyst-toolkit, open-climate-data and unitguard — package directory, unittest suite, executable example, pyproject with requires-python >=3.9 and zero dependencies, and a README whose "what this is not" section is mandatory. Also updates BACKLOG.md and the root README project table, which are the two places a new project is referenced from and the two places people forget. Use this skill whenever the user wants to start a new project or tool in one of these repos, picks up the next unchecked item from BACKLOG.md, or says "yeni proje", "yeni araç ekle", "004'ü yapalım", "add a new tool", "scaffold a project", "start the next backlog item". Also use it when reviewing whether an existing project follows the layout, since it encodes the conventions those repos already hold themselves to. Not for orchestrating a whole multi-part build; use proje for that.
 ---
 
 # New project scaffold
@@ -34,11 +34,16 @@ ahead of time, and it has collided before.
 ## Create it
 
 ```bash
-python3 "$SKILL_DIR/scripts/scaffold.py" <repo-root> <NNN> <project-name> \
+# $SKILL_DIR is not set in every runtime; locate the script directly.
+SCAFFOLD="$(find "$HOME/.claude/skills" "$HOME/agents" -name scaffold.py -path '*new-project-scaffold*' -print -quit 2>/dev/null)"
+python3 "$SCAFFOLD" <repo-root> <NNN> <project-name> \
     --package <python_package_name> \
     --description "one sentence, what it does" \
     --cli <command-name>          # omit if there is no CLI
 ```
+
+If `$SCAFFOLD` comes back empty the skill lives somewhere these roots do not
+cover — ask the user where it is installed rather than guessing a path.
 
 It writes the directory, a README skeleton with the required sections, a
 `pyproject.toml` matching the sibling projects, an empty test module and an
