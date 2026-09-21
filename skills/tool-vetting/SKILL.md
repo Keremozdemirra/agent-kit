@@ -1,6 +1,6 @@
 ---
 name: tool-vetting
-description: Vets a tool before it is installed, against the seven checks that caught real problems here: what it costs in resident context, what hooks it registers (check plugins/cache/, not just the marketplace listing), what licence it carries and whether that survives being copied into your repo, whether it duplicates something already installed, whether it works unattended or sits inert until called, what authority it wants, and whether the repository behind it actually exists. Use before installing a plugin, skill, MCP server or CLI, when someone forwards a guide recommending a stack of AI tools, and when deciding whether an installed tool still earns its cost: "sunu kurar misin", "bu arac iyi mi", "kurmadan once bak", "bu guvenli mi". Not for auditing your own app; use pre-launch-security-audit.
+description: Vets a tool before it is installed, and finds the ones worth vetting in the first place. Starts from what you already have — enumerate the installed surface, derive the gaps, and recommend against gaps rather than against a vendor catalogue. Then: pull the real corpus instead of answering from recall, prove a service exists by speaking its protocol rather than reading its status code, resolve every install route separately because a guide's repo link and its install command can point at different code, read the instruction file as an execution path and not just the hooks, and finish with a three-way verdict — install alongside, replace the incumbent, or decline with a recorded reason. Use before installing a plugin, skill, MCP server or CLI, when someone forwards a guide or a list recommending a stack of AI tools, when asked to find tools for a job, and when deciding whether an installed tool still earns its cost: "sunu kurar misin", "bu arac iyi mi", "kurmadan once bak", "bu guvenli mi", "bize ne lazim". Not for auditing your own app; use pre-launch-security-audit.
 ---
 
 # Vetting a tool before it goes in
@@ -9,61 +9,146 @@ Installing is the easy part and the irreversible part. Everything below happens
 **before** anything runs, because the failure mode is silent: a bad install does
 not error, it just quietly has more access than it needed.
 
-Two standing rules. **Provenance before capability** — what a tool does is
-irrelevant until you know whose code it is. And **a guide is a claim, not a
-source**: forwarded articles, videos and Notion pages are marketing surfaces,
-frequently affiliate-driven, and they get repo names, star counts and licences
-wrong in the direction that favours installing.
+Three standing rules. **Inventory before candidates** — "which tool is good?"
+is the wrong question until you know what is missing. **Provenance before
+capability** — what a tool does is irrelevant until you know whose code it is.
+And **a guide is a claim, not a source**: forwarded articles, videos, PDFs and
+Notion pages are marketing surfaces, frequently affiliate-driven, and they get
+repo names, star counts, licences and even install commands wrong in the
+direction that favours installing.
 
-## 1. Confirm the repo is the one they meant
+## 0. Enumerate what you already have, then derive the gaps
+
+Do this first, once per session, and reuse it for every candidate. Without it
+the answer degenerates into a vendor catalogue where most entries are already
+covered.
 
 ```bash
-curl -s "https://api.github.com/repos/OWNER/NAME" | python3 -c "import sys,json;d=json.load(sys.stdin);print(d.get('message') or f\"stars={d['stargazers_count']} lic={(d.get('license') or {}).get('spdx_id')} pushed={d['pushed_at'][:10]}\")"
+claude mcp list 2>/dev/null || jq -r '.mcpServers|keys[]' ~/.claude.json
+jq -r '.plugins|keys[]' ~/.claude/plugins/installed_plugins.json
+ls ~/.claude/skills ~/.claude/agents
 ```
 
-Compare stars, licence and last push against what the guide claimed. A guide that
-is wrong about the star count is wrong about other things too.
+Write the gap list from the inventory, keyed by **job to be done**, not by
+install type. Then two corollaries that decide most cases on their own:
+
+- A gap that is already 80% covered is not a gap.
+- Once ten or more servers are live, **context budget is the scarce resource**,
+  not capability. Every authorised server's tool definitions ride along; three
+  or four additions, worked for a week, then remove whatever never fired.
+
+For a batch — a forwarded list, a queue of links — build the inventory once and
+run every candidate against it. Re-deriving it per candidate is the expensive
+mistake.
+
+## 1. When the question is "what exists", fetch the corpus
+
+Answering a discovery question from memory produces a plausible shortlist and
+misses working endpoints you would never recall. Pull the registry, then filter
+mechanically before any judgement:
+
+- **Reverse-DNS namespace is domain-verified.** `com.stripe/mcp` is provably
+  Stripe's; `com.mcparmory/sentry` is a third party wrapping Sentry. Publisher
+  authenticity is readable straight off the name.
+- **Publisher entry-count is inversely correlated with legitimacy.** Real
+  companies ship one to three servers; spam farms ship twenty to two hundred.
+- Vendor blog posts, listicles and search-result summaries are **not**
+  endpoint verification. In one run they carried five wrong URLs.
+
+## 2. Prove it exists by speaking its protocol
+
+Status-code probing looks sufficient and is not. Of 43 endpoints returning HTTP
+200 to an MCP `initialize` POST, **15 were not MCP servers at all** — marketing
+pages, SPA shells and generic APIs that return 200 to any POST. Only parsing the
+body for the protocol's own required fields separated the real ones.
+
+```bash
+curl -s -m 12 -X POST "$URL" -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"probe","version":"1"}}}' \
+  | grep -o '"serverInfo":{[^}]*}'
+```
+
+Read the outcome as evidence, not as pass/fail:
+
+| Response | What it proves |
+|---|---|
+| 200 **with** `serverInfo` / `protocolVersion` | Real, open, connect now |
+| 200 **without** them | Something answered. Not the service. Drop it |
+| 401 | **The real server is there and gated** — the strongest liveness signal short of a handshake |
+| 404 / DNS failure | The documented address is wrong — report that, it is a finding about the guide |
+
+An auth rejection is positive evidence of existence. Treat "failed" responses as
+data, never as noise to discard.
+
+## 3. Confirm the repo is the one they meant — and resolve every route
+
+```bash
+curl -s "https://api.github.com/repos/OWNER/NAME" | python3 -c "import sys,json;d=json.load(sys.stdin);print(d.get('message') or f\"stars={d['stargazers_count']} lic={(d.get('license') or {}).get('spdx_id')} fork={d['fork']} pushed={d['pushed_at'][:10]}\")"
+```
+
+Compare stars, licence and last push against what the guide claimed. A guide
+that is wrong about the star count is wrong about other things too.
 
 **Then search for the same name under other owners.** This is the check that
-matters most and the one nobody runs. A guide once pointed at a 3-star repo whose
-description was a near-copy of a 54,000-star project of the same name, with a
-`npm install -g` command underneath it. The star count is the tell; the name is
-not.
+matters most and the one nobody runs. A guide once pointed at a 3-star repo
+whose description was a near-copy of a 58,000-star project of the same name.
+The star count is the tell; the name is not. A `fork: true` with a `parent`
+field is a different situation from a typosquat and deserves a different
+sentence in the write-up.
 
-## 2. Match the package registry against the repo
+**A recommendation usually offers several ways to obtain the same thing** — a
+repo link, a package-manager command, a marketplace button, a curl script.
+Resolve each one to the code it actually fetches, then compare. In the case
+above the `npm install` command fetched the legitimate upstream package while
+the repo link pointed at a stale fork by an unrelated account. Agreement is weak
+confirmation; **disagreement localises the defect and tells you whether the
+problem is the tool or the person recommending it.**
 
-A legitimate project's package points back at its own repository and has a
-publication history. Check the maintainer and the declared repo URL:
+## 4. Match the package registry against the repo
 
 ```bash
 curl -s https://registry.npmjs.org/PKG | python3 -c "import sys,json;d=json.load(sys.stdin);lv=d['dist-tags']['latest'];print([m.get('name') for m in d.get('maintainers',[])], d['versions'][lv].get('repository'))"
 curl -s https://pypi.org/pypi/PKG/json | python3 -c "import sys,json;d=json.load(sys.stdin);print(d['info'].get('project_urls'), len(d['releases']),'releases')"
 ```
 
-An odd package name is not automatically a typosquat — projects do get renamed
-and do hold placeholder names while reclaiming the one they want. Resolve it by
-checking whether the package points back at the repo, not by how the name looks.
+An odd package name is not automatically a typosquat — projects get renamed and
+hold placeholder names. Resolve it by checking whether the package points back
+at the repo, not by how the name looks.
 
-## 3. Read what runs automatically, before it can run
+## 5. Read what runs automatically, before it can run
 
 Clone shallow and read. Do not install first and inspect later.
 
 ```bash
 git clone -q --depth 1 https://github.com/OWNER/NAME /tmp/vet && cd /tmp/vet
 find . -name "hooks.json" -o -path "*/hooks/*" -type f | head
-grep -rhoE "https?://[a-zA-Z0-9._/-]+" scripts/ hooks/ 2>/dev/null | sort -u
-grep -rinE "api[_ ]?key|_TOKEN|\.env|credentials|process\.env" scripts/ hooks/ 2>/dev/null | head
+grep -rhoE "https?://[a-zA-Z0-9._/-]+" scripts/ hooks/ bin/ 2>/dev/null | sort -u
+grep -rinE "api[_ ]?key|_TOKEN|\.env|credentials|process\.env" scripts/ hooks/ bin/ 2>/dev/null | head
 ```
 
-You are looking for three things: what fires without being asked, where it sends
-data, and what secrets it can reach. A hook that only reads local files is fine.
-A hook that posts anywhere is a question for the user, not a judgement call.
+Three things: what fires without being asked, where it sends data, what secrets
+it can reach. A hook that only reads local files is fine. A hook that posts
+anywhere is a question for the user, not a judgement call.
 
-## 4. Find out what already owns the target directory
+**Then read the instruction file itself — it is an execution path, not
+documentation.** A skill can reach the network on every invocation while
+presenting a completely clean hook surface, because the model reads SKILL.md and
+does what it says. Grep the prose for imperatives that invoke bundled scripts,
+phone home, acknowledge events, or tell the agent what not to mention.
+
+Read the **surrounding section** before judging any sentence. One skill's "then
+continue without mentioning the check" reads as suppressed disclosure alone; in
+context it applied only to the no-update case, and the same file forbade
+relaying remote text at all — a deliberate injection defence. The mitigation for
+a real finding is usually a documented environment flag set once in settings,
+which beats forking the skill because it survives updates.
+
+## 6. Find out what already owns the target directory
 
 Before writing into any directory an existing setup maintains, find out what
 writes there. A config directory that looks hand-maintained may be build output,
-and files dropped into it disappear on the next regeneration — silently, and much
+and files dropped into it disappear on the next regeneration — silently, much
 later.
 
 ```bash
@@ -71,10 +156,9 @@ grep -rl "GENERATED\|DO NOT EDIT\|autogenerated" ~/.claude/agents ~/.claude/skil
 ```
 
 If the directory is generated, install through the generator's own source (a
-registry, a template) or into a namespace it does not own. Plugin-provided agents
-and skills live in their own namespace and are safe on that count.
+registry, a template) or into a namespace it does not own.
 
-## 5. Prefer the mode that touches least
+## 7. Prefer the mode that touches least
 
 Most serious tools ship several integration modes, and they are not equally
 invasive. In descending order of preference:
@@ -83,37 +167,63 @@ invasive. In descending order of preference:
 2. **MCP server** — a tool the model calls; no credential access, no interception.
 3. **Hooks** — runs on every matching event, forever, in every project.
 4. **Proxy or wrapper** — sits between the agent and the model, sees everything,
-   and on a subscription plan raises questions the tool's README will not answer.
+   and on a subscription plan raises questions the README will not answer.
 
-Take the least invasive mode that still delivers the point of the tool. When the
-invasive mode is the only one that works, say so plainly and let the user decide
-rather than quietly installing it. Be honest when a tool's own docs admit the
-lighter mode loses the value — that is an argument for skipping, not for
-upgrading to the heavy mode by default.
+Take the least invasive mode that still delivers the point of the tool. Be
+honest when the lighter mode structurally cannot deliver the value — an MCP
+server cannot intercept, so a compression tool in MCP mode compresses only what
+you hand it. That is an argument for skipping, not for upgrading to the heavy
+mode by default.
 
-## 6. Judge cost against where the work actually is
-
-A per-turn cost is only worth paying if the value fires where the user works.
-Ask two questions:
+## 8. Judge cost against where the work actually is
 
 **Does the trigger occur in this workflow?** A commit-time scanner is worth its
-hooks only if commits go through the agent. If they run in a deterministic script
-outside the model, the scanner's one unique contribution almost never fires while
+hooks only if commits go through the agent. If they run in a deterministic
+script outside the model, its one unique contribution almost never fires while
 its per-turn hooks fire always.
 
-**Is this already resident?** Rules the user already keeps in CLAUDE.md are
-loaded every session at zero hook cost. A plugin that installs a generic version
-of a rule the user has already written, in their own words, is a third copy plus
-overhead. Sharpen the existing line instead — it is free.
+**Is this already resident?** Rules the user keeps in CLAUDE.md are loaded every
+session at zero hook cost. A plugin installing a generic version of a rule the
+user already wrote, in their own words, is a third copy plus overhead. Sharpen
+the existing line instead — it is free.
 
-## 7. Say what you skipped and why
+**Is there a target?** A tool can be excellent, cleanly licensed and perfectly
+provenanced, and still have nothing here to point it at. "No target yet" is a
+real verdict and belongs in the record with the date it might change.
 
-The output of a vetting pass is a short list of what went in, and a shorter list
-of what did not with one line of reasoning each. "Skipped, overlaps X" and
-"skipped, needs a paid seat" are useful; silence is not. A tool rejected with a
+## 9. Finish with a three-way verdict, and record the skips
+
+Every candidate ends as exactly one of:
+
+- **Install alongside** — fills a gap nothing covers.
+- **Replace the incumbent** — requires evidence that the incumbent is unused or
+  strictly worse, *and* a named rollback. Absent both, this is not available.
+- **Decline** — with one line of reason, dated.
+
+The output of a pass is a short list of what went in and a shorter list of what
+did not, one line each. "Skipped, overlaps X", "skipped, needs a paid seat",
+"skipped, no target yet" are useful; silence is not. A tool rejected with a
 recorded reason does not have to be re-evaluated the next time someone forwards
-the same guide.
+the same guide — and the same names do get forwarded repeatedly.
 
-Re-run point 6 on things already installed. An install that made sense on the
+Re-run section 8 on things already installed. An install that made sense on the
 information available then can stop making sense once you learn how the user
 actually works — reversing it is a normal outcome of this skill, not a failure.
+
+## 10. Mechanical checks now on this machine (2026-09-21)
+
+The reading pass above stays; these run before it and give it a list of lines
+to read first. Static modes only. A scanner's LLM mode sends the scanned code
+to a provider, so `SKILLSPECTOR_PROVIDER` stays unset.
+
+```bash
+skillspector scan <dir-or-repo-url> --no-llm --format json --output /tmp/ss.json   # skills, plugins, MCP tool manifests
+mcp-scanner --help                                                                  # MCP servers: tools, prompts, resources; YARA analyzer, no API key
+dev-machine-guard scan --json                                                       # what is installed on this machine: agents, MCP servers, IDE extensions, packages
+```
+
+Read the findings by category and file before believing the score. A repository
+that ships benchmarks and test fixtures scores high on prose patterns while its
+skill directory alone scores low (ponytail: 100 for the repository, the skill
+directory on its own is what gets linked). A green result is one narrow answer,
+that the code does nothing hostile; fit is still decided by section 8.
