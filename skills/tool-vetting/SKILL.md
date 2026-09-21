@@ -227,7 +227,7 @@ to a provider, so `SKILLSPECTOR_PROVIDER` stays unset.
 ```bash
 skillspector scan <dir-or-repo-url> --no-llm --format json --output /tmp/ss.json   # skills, plugins, MCP tool manifests
 mcp-scanner --help                                                                  # MCP servers: tools, prompts, resources; YARA analyzer, no API key
-dev-machine-guard scan --json                                                       # what is installed on this machine: agents, MCP servers, IDE extensions, packages
+dev-machine-guard --json                                                            # what is installed on this machine: agents, MCP servers, IDE extensions, packages
 ```
 
 Read the findings by category and file before believing the score. A repository
