@@ -227,7 +227,7 @@ to a provider, so `SKILLSPECTOR_PROVIDER` stays unset.
 ```bash
 skillspector scan <dir-or-repo-url> --no-llm --format json --output /tmp/ss.json   # skills, plugins, MCP tool manifests
 mcp-scanner --analyzers yara stdio --stdio-command "<cmd>"                          # a local MCP server's tools, YARA only, no API key
-mcp-scanner --analyzers yara --server-url <url> remote --server-url <url>             # a remote one; 4.8.4 needs the url in both places, and --stdio-timeout crashes it
+mcp-scanner --analyzers yara --server-url <url> remote --server-url <url>             # a remote one; 4.8.4 needs the url in both places, --stdio-timeout crashes it, and SSE or gated endpoints fail with "No server URL provided" (deepwiki scanned, jina, fred, eu-trade, statistics-world did not, 2026-09-21)
 dev-machine-guard --json                                                            # what is installed on this machine: agents, MCP servers, IDE extensions, packages
 ```
 
