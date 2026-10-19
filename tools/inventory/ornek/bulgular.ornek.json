@@ -1,49 +1,130 @@
 {
   "sema_surumu": "1.1",
-  "uretim_zamani": "2026-08-11T15:30:00",
-  "kok": "/path/to/home/Desktop/agent",
+  "uretim_zamani": "2026-10-19T15:43:46",
+  "kok": "/path/to/agent-kit/tools/inventory/test/sahte-kok",
   "ozet": {
-    "hata": 1,
-    "uyari": 2,
-    "bilgi": 1,
-    "kontrol_edilen": 15
+    "hata": 9,
+    "uyari": 1,
+    "bilgi": 3,
+    "kontrol_edilen": 7
   },
   "bulgular": [
+    {
+      "kural": "R04",
+      "kural_adi": "ad-format",
+      "onem": "hata",
+      "kimlik": "agent:Ad_Format",
+      "dosya": ".claude/agents/Ad_Format.md",
+      "mesaj": "name 'Ad_Format' beklenen biçime uymuyor (küçük harf, rakam, tire)",
+      "ipucu": "name alanını yalnız küçük harf, rakam ve tireden oluşacak şekilde düzelt"
+    },
     {
       "kural": "R03",
       "kural_adi": "ad-dosya-uyumu",
       "onem": "hata",
-      "kimlik": "agent:kod-review",
-      "dosya": ".claude/agents/kod-review.md",
-      "mesaj": "frontmatter'daki name 'kod-rev' dosya adı 'kod-review' ile uyuşmuyor",
-      "ipucu": "name alanını 'kod-review' yap ya da dosyayı kod-rev.md olarak yeniden adlandır"
+      "kimlik": "agent:ad-cakismasi",
+      "dosya": ".claude/agents/ad-cakismasi.md",
+      "mesaj": "frontmatter'daki name 'kisa-aciklama' dosya adı 'ad-cakismasi' ile uyuşmuyor",
+      "ipucu": "name alanını 'ad-cakismasi' yap ya da dosyayı ad-cakismasi.md olarak yeniden adlandır"
+    },
+    {
+      "kural": "R03",
+      "kural_adi": "ad-dosya-uyumu",
+      "onem": "hata",
+      "kimlik": "agent:ad-uyumsuz",
+      "dosya": ".claude/agents/ad-uyumsuz.md",
+      "mesaj": "frontmatter'daki name 'baska-isim' dosya adı 'ad-uyumsuz' ile uyuşmuyor",
+      "ipucu": "name alanını 'ad-uyumsuz' yap ya da dosyayı ad-uyumsuz.md olarak yeniden adlandır"
+    },
+    {
+      "kural": "R01",
+      "kural_adi": "frontmatter-var",
+      "onem": "hata",
+      "kimlik": "agent:frontmatter-yok",
+      "dosya": ".claude/agents/frontmatter-yok.md",
+      "mesaj": "frontmatter bloğu bulunamadı (dosya '---' ile başlamıyor)",
+      "ipucu": "dosyanın en başına '---' ile açılıp '---' ile kapanan bir frontmatter bloğu ekle"
+    },
+    {
+      "kural": "R02",
+      "kural_adi": "zorunlu-alan",
+      "onem": "hata",
+      "kimlik": "agent:frontmatter-yok",
+      "dosya": ".claude/agents/frontmatter-yok.md",
+      "mesaj": "frontmatter'da 'name' alanı boş ya da eksik",
+      "ipucu": "name: frontmatter-yok satırını ekle"
+    },
+    {
+      "kural": "R02",
+      "kural_adi": "zorunlu-alan",
+      "onem": "hata",
+      "kimlik": "agent:frontmatter-yok",
+      "dosya": ".claude/agents/frontmatter-yok.md",
+      "mesaj": "frontmatter'da 'description' alanı boş ya da eksik",
+      "ipucu": "description alanına ne zaman kullanılacağını açıklayan bir metin ekle"
+    },
+    {
+      "kural": "R05",
+      "kural_adi": "ad-cakismasi",
+      "onem": "hata",
+      "kimlik": "agent:kisa-aciklama",
+      "dosya": ".claude/agents/kisa-aciklama.md",
+      "mesaj": "name 'kisa-aciklama' başka bir kayıtla çakışıyor (agent:ad-cakismasi)",
+      "ipucu": "iki kayıttan birinin name alanını benzersiz yap"
     },
     {
       "kural": "R06",
       "kural_adi": "aciklama-kalitesi",
-      "onem": "uyari",
-      "kimlik": "agent:otomasyon-mimari",
-      "dosya": ".claude/agents/otomasyon-mimari.md",
-      "mesaj": "aciklama 92 karakter, 40-119 aralığında — biraz kısa",
-      "ipucu": "açıklamaya ne zaman tetiklendiğini gösteren 1-2 örnek daha ekle"
+      "onem": "hata",
+      "kimlik": "agent:kisa-aciklama",
+      "dosya": ".claude/agents/kisa-aciklama.md",
+      "mesaj": "aciklama 20 karakter, 40 karakterden kısa",
+      "ipucu": "açıklamaya ne işe yaradığını ve ne zaman kullanılacağını anlatan ayrıntı ekle"
+    },
+    {
+      "kural": "R07",
+      "kural_adi": "govde-bosluk",
+      "onem": "hata",
+      "kimlik": "skill:bos-govde",
+      "dosya": ".claude/skills/bos-govde/SKILL.md",
+      "mesaj": "gövde 17 karakter, 200 karakterden kısa",
+      "ipucu": "gövdeye rol, kurallar ve adımları anlatan içerik ekle"
     },
     {
       "kural": "R08",
       "kural_adi": "kirik-referans",
       "onem": "uyari",
-      "kimlik": "skill:proje",
-      "dosya": ".claude/skills/proje/SKILL.md",
-      "mesaj": "referanslar içinde 'ozel-agent' adında bir kayıt bulunamadı",
-      "ipucu": "'ozel-agent' adlı bir agent/skill oluştur ya da referansı gövdeden kaldır"
+      "kimlik": "agent:kirik-ref",
+      "dosya": ".claude/agents/kirik-ref.md",
+      "mesaj": "referanslar içinde 'olmayan-agent' adında bir kayıt bulunamadı",
+      "ipucu": "'olmayan-agent' adlı bir agent/skill oluştur ya da referansı gövdeden kaldır"
+    },
+    {
+      "kural": "R07",
+      "kural_adi": "govde-bosluk",
+      "onem": "bilgi",
+      "kimlik": "agent:frontmatter-yok",
+      "dosya": ".claude/agents/frontmatter-yok.md",
+      "mesaj": "gövdede '## ' ile başlayan başlık yok",
+      "ipucu": "içeriği bölümlere ayırmak için '## ' başlıkları ekle"
     },
     {
       "kural": "R09",
       "kural_adi": "alan-saglik",
       "onem": "bilgi",
-      "kimlik": "agent:veri-analisti",
-      "dosya": ".claude/agents/veri-analisti.md",
-      "mesaj": "bilinmeyen_alanlar dolu: ['owner']",
-      "ipucu": "beklenmeyen frontmatter alanını kaldır ya da kasıtlıysa göz ardı et"
+      "kimlik": "agent:frontmatter-yok",
+      "dosya": ".claude/agents/frontmatter-yok.md",
+      "mesaj": "araclar listesi boş",
+      "ipucu": "tools alanına agent'ın kullanacağı araçları ekle"
+    },
+    {
+      "kural": "R07",
+      "kural_adi": "govde-bosluk",
+      "onem": "bilgi",
+      "kimlik": "skill:bos-govde",
+      "dosya": ".claude/skills/bos-govde/SKILL.md",
+      "mesaj": "gövdede '## ' ile başlayan başlık yok",
+      "ipucu": "içeriği bölümlere ayırmak için '## ' başlıkları ekle"
     }
   ]
 }

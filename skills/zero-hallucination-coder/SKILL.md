@@ -223,4 +223,4 @@ Surface these without being asked:
 - **Ponytail kill:** an entire story can be eliminated by stdlib/native/installed dep → report it before writing anything.
 
 ---
-*Source: github.com/alirezarezvani/claude-skills (MIT)*
+*Derived from github.com/alirezarezvani/claude-skills, MIT licence, Copyright (c) 2025 Alireza Rezvani. See THIRD-PARTY-NOTICES.md at the repository root.*
