@@ -96,7 +96,6 @@ See [BACKLOG.md](BACKLOG.md). The first unchecked item is the one being built.
 | Skill | What it does |
 | --- | --- |
 | [hafiza-guncelle](skills/hafiza-guncelle) | Write what a session established into persistent memory, and prune what is no longer true. |
-| [karpathy-guidelines](skills/karpathy-guidelines) | Behavioural guidelines that reduce the coding mistakes language models reliably make. |
 | [new-project-scaffold](skills/new-project-scaffold) | Create a new numbered project in the projects/NNN-name/ layout these repositories share. |
 | [proje](skills/proje) | Deliver a multi-step build end to end with a team of specialist agents, from one prompt. |
 | [tool-vetting](skills/tool-vetting) | Check a third-party plugin, skill, MCP server or CLI before it is installed: provenance, lookalike repositories, what runs automatically, and whether its value fires where the work actually is. |
@@ -121,4 +120,4 @@ yet.
 
 MIT. See [LICENSE](LICENSE).
 
-The exceptions: `skills/zero-hallucination-coder/SKILL.md`, `skills/karpathy-guidelines/SKILL.md` are derived from MIT-licensed work by other authors and stay under their upstream copyright notice. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+The exception: `skills/zero-hallucination-coder/SKILL.md` is derived from MIT-licensed work by another author and stays under its upstream copyright notice. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

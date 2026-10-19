@@ -75,7 +75,7 @@ The ones that usually earn their place (the full list is in the system prompt):
 
 | Need | Skill |
 |---|---|
-| Risky or complex code | `zero-hallucination-coder`, `karpathy-guidelines` |
+| Risky or complex code | `zero-hallucination-coder` |
 | A new tool in Kerem's monorepos | `new-project-scaffold` |
 | Interface or visual direction | `frontend-design`, `de-ai-slop-ui` |
 | Multi-component HTML/React artifact | `web-artifacts-builder` |
@@ -345,8 +345,8 @@ it is closed.
   on its own; it raises a `REQUEST` and you decide.
 - **Secret scan.** Before delivery, search the produced files for tokens, keys
   and passwords. If you find one, stop the delivery.
-- For risky or multi-file code, add the `zero-hallucination-coder` or
-  `karpathy-guidelines` discipline to the implementer's prompt.
+- For risky or multi-file code, add the `zero-hallucination-coder`
+  discipline to the implementer's prompt.
 
 ---
 
